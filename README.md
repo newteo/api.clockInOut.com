@@ -34,3 +34,11 @@
 	time: ${time}        //时间(Date)
 }
 ```
+### 查看个人信息
+```js
+		GET    http://localhost:?/user/info?token=${token}
+```
+### 查看个人打卡记录
+```js
+		GET    http://localhost:?/user/records?token=${token}
+```
