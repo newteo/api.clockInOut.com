@@ -134,7 +134,7 @@ router.post('/punch', (req, res)=> {
 //查看个人信息
 router.get('/info', (req, res)=> {
 	const userId = req.decoded.userId
-	User.findOne({_id: userId})
+	User.findOne({_id: userId}, {__v:0})
 	.populate('belongsTo')
 	.exec((err, user)=> {
 		if(err) return res.send({code: 404, err})
@@ -144,7 +144,7 @@ router.get('/info', (req, res)=> {
 //查看个人打卡记录
 router.get('/records', (req, res)=> {
 	const userId = req.decoded.userId
-	Record.find({owner: userId})
+	Record.find({owner: userId}, {__v:0})
 	.sort({createdTime: -1})
 	.exec((err, records)=> {
 		if(err) return res.send({code: 404, err})
