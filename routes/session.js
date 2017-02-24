@@ -17,9 +17,9 @@ function setinfo(wxInfo, res) {
 			salt, 
 			{expiresIn: '7d'}, 
 			(err, token)=> {
-				if(err) return res.send(err)
+				if(err) return res.send({code: 404, err})
 				// console.log('ok')
-				res.send({status: same.status, token: token})
+				res.send({code: 200, status: same.status, token: token})
 			})
 		} else {
 			const info = new User({
@@ -34,13 +34,13 @@ function setinfo(wxInfo, res) {
 				remark: null,
 			})
 			info.save((err)=> {
-				if(err) return res.send(err)
+				if(err) return res.send({code: 404, err})
 				jwt.sign({userId: info._id}, 
 				salt, 
 				{expiresIn: '7d'}, 
 				(err, token)=> {
-					if(err) return res.send(err)
-					res.send({status: info.status, token: token})
+					if(err) return res.send({code: 404, err})
+					res.send({code: 200, status: info.status, token: token})
 				})
 			})
 		}
@@ -62,7 +62,7 @@ router.get('/', (req, res)=> {
 			const pc = new WXBizDataCrypt(xcxId, sessionKey)
 			const wxInfo = pc.decryptData(encryptedData, iv)
 			delete wxInfo.watermark    //(！！！)
-			console.log(wxInfo)
+			// console.log(wxInfo)
 			setinfo(wxInfo, res)
 		} else res.send(result.text)
 	})

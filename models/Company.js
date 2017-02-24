@@ -3,12 +3,13 @@ const mongoose = require('mongoose')
 	, User = require('./User')
 	, Sentence = require('./Sentence')
 
-const compenySchema = new Schema({
+const companySchema = new Schema({
 	name: { type: String },
 	logo: { type: String },
 	address: { type: String },
 	phone: { type: Number },
-	coordinates: [{ type: String }],        //坐标
+	coordinate_latitude: { type: Number },        //坐标纬度
+	coordinate_longitude: { type: Number },        //坐标经度
 	commutingTime: [{ type: String }],        //上下班时间
 	radius: { type: Number },        //半径
 	corporateMember: [{        //公司成员
@@ -34,4 +35,4 @@ const compenySchema = new Schema({
 		updatedAt: 'updatedTime'
 	}
 })
-module.exports = mongoose.model('Compeny', compenySchema)
+module.exports = mongoose.model('Company', companySchema)

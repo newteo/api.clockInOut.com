@@ -1,12 +1,12 @@
 const mongoose = require('mongoose')
 	, Schema = mongoose.Schema
-	, Compeny = require('./Compeny')
+	, Company = require('./Company')
 
 const sentenceSchema = new Schema({
 	num: { type: Number },
-	compenyId: {        //公司
+	companyId: {        //公司
 		type: Schema.Types.ObjectId,
-		ref: 'Compeny'
+		ref: 'Company'
 	},
 	text: { type: String },
 	createdTime: {

@@ -2,8 +2,15 @@ const mongoose = require('mongoose')
 	, Schema = mongoose.Schema
 
 const adminSchema = new Schema({
-	adminName: { type: String },
-	password: { type: String },
+	adminName: { 
+		type: String,
+		required: true,
+		unique: true
+	},
+	password: { 
+		type: String,
+		required: true 
+	},
 	createdTime: {
 		type: Date, 
 		default: Date.now

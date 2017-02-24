@@ -1,28 +1,28 @@
 const mongoose = require('mongoose')
 	, Schema = mongoose.Schema
 	, User = require('./User')
-	, Compeny = require('./Compeny')
+	, Company = require('./Company')
 
 const recordSchema = new Schema({
 	owner: {
 		type: Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	compenyId: {        //所属公司
+	companyId: {        //所属公司
 		type: Schema.Types.ObjectId,
-		ref: 'Compeny'
+		ref: 'Company'
 	},
 	normal: { type: Boolean },        //是否异常
 	longitude: { type: Number },       //经度
 	latitude: { type: Number },       //纬度
 	place: { type: String },        //地点
-	today: { type: Date },        //日期
-	sweep1: { type: Date },
-	sweep2: { type: Date },
-	sweep3: { type: Date },
-	sweep4: { type: Date },
-	sweep5: { type: Date },
-	sweep6: { type: Date },
+	today: { type: String },        //日期
+	sweep1: { type: String },
+	sweep2: { type: String },
+	sweep3: { type: String },
+	sweep4: { type: String },
+	sweep5: { type: String },
+	sweep6: { type: String },
 	createdTime: {
 		type: Date, 
 		default: Date.now

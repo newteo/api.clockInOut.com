@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 	, Schema = mongoose.Schema
 	, Record = require('./Record')
-	, Compeny = require('./Compeny')
+	, Company = require('./Company')
 
 const userSchema = new Schema({
 	openId: { type: String },
@@ -15,7 +15,7 @@ const userSchema = new Schema({
 	},
 	belongsTo: {        //所属公司
 		type: Schema.Types.ObjectId,
-		ref: 'Compeny'
+		ref: 'Company'
 	},
 	punchCardRecords: [{
 		type: Schema.Types.ObjectId,
