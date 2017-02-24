@@ -1,3 +1,3 @@
 module.exports = {
-	clock: 'http://cbinbin.xyz/'//'https://.newteo.com/'
+	clock: 'https://cbinbin.xyz/'//'https://.newteo.com/'
 }
