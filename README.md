@@ -34,49 +34,22 @@
 	time: ${time}        //时间(Date)
 }
 ```
-头次=> 
+返回=>   
 ```js
 {
-	"code": 200,
-  "record": {
-    "updatedTime": "xxx",
-    "owner": "58ae58fda9669e14b6aadb3a",
-    "normal": false,
-    "longitude": 116,
-    "latitude": 23,
-    "place": "xxx",
-    "today": "xxx",
-    "sweep1": "xxx",
-    "sweep2": "xxx",
-    "sweep3": "xxx",
-    "sweep4": "xxx",
-    "sweep5": "xxx",
-    "sweep6": "xxx",
+  "code": 200,
+  "sweep": {
     "_id": "xxx",
-    "createdTime": "xxx"
-  }
-}
-```
-其他=>  
-```js
-{
-	"code": 200,
-  "place": "xxx",
-  "same": {
-    "updatedTime": "xxx",
-    "owner": "58ae58fda9669e14b6aadb3a",
-    "normal": false,
-    "longitude": 116,
-    "latitude": 23,
-    "place": "xxx",
-    "today": "xxx",
-    "sweep1": "xxx",
-    "sweep2": "xxx",
-    "sweep3": "xxx",
-    "sweep4": "xxx",
-    "sweep5": "xxx",
-    "sweep6": "xxx",
-    "_id": "xxx",
+    "owner": {        //用户信息
+      "updatedTime": "xxx",
+      "wxName": "xxx",
+      "img": "xxx",
+      "employeeID": "xxx",
+      "realName": "xxx",
+      "status": "nowork"
+    },
+    "place": "xxx",       //地点
+    "h_m_s": "xx:xx:xx",        //时分秒
     "createdTime": "xxx"
   }
 }
@@ -98,11 +71,11 @@
 		"employeeID": "xxx",        //员工编号
 		"realName": "xxx",        //真实姓名
 		"status": "work",        //工作状态
-		"belongsTo": "xxx",        //所属公司Id
+		"belongsTo": {...},        //所属公司
 		"remark": "xxx",        //备注
 		"createdTime": "xxx",
 		"punchCardRecords": [        //打卡总记录
-			"xxx"
+			"xxx", "xxx"
 		]
 	}
 }
@@ -114,23 +87,47 @@
 返回=>  
 ```js
 {
-	"code": 200,
-  "records": [
+  "_id": "xxx",
+  "updatedTime": "xxx",
+  "owner": {
+    "wxName": "xxx",
+    "img": "xxx",
+    "employeeID": "xxx",
+    "realName": "xxx",
+    "status": "xxx"
+  },
+  "normal": false,
+  "today": "xxx",
+  "createdTime": "xxx",
+  "sweeps": [
     {
-      "_id": "xxx",
-      "updatedTime": "xxx",
-      "owner": "xxx",
-      "normal": false,
-      "longitude": 116,
-      "latitude": 23,
       "place": "xxx",
-      "today": "xxx",
-      "sweep1": "xxx",
-      "sweep2": "xxx",
-      "sweep3": "xxx",
-      "sweep4": "xxx",
-      "sweep5": "xxx",
-      "sweep6": "xxx",
+      "h_m_s": "xxx",
+      "createdTime": "xxx"
+    },
+    {
+      "place": "xxx",
+      "h_m_s": "xxx",
+      "createdTime": "xxx"
+    },
+    {
+      "place": "xxx",
+      "h_m_s": "xxx",
+      "createdTime": "xxx"
+    },
+    {
+      "place": "xxx",
+      "h_m_s": "xxx",
+      "createdTime": "xxx"
+    },
+    {
+      "place": "xxx",
+      "h_m_s": "xxx",
+      "createdTime": "xxx"
+    },
+    {
+      "place": "xxx",
+      "h_m_s": "xxx",
       "createdTime": "xxx"
     }
   ]
