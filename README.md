@@ -5,7 +5,7 @@
 ## 
 ### 授权登录
 ```js
-		GET    http://localhost:?/session?code=${code}&iv=${iv}&encryptedData=${encryptedData}&newteo=${newteo}
+	GET    http://localhost:?/session?code=${code}&iv=${iv}&encryptedData=${encryptedData}&newteo=${newteo}
 ```
 ```js
 {
@@ -25,7 +25,7 @@
 
 ### 打卡
 ```js
-		POST    http://localhost:?/user/punch?token=${token}
+	POST    http://localhost:?/user/punch?token=${token}
 ```
 ```js
 {
@@ -56,7 +56,7 @@
 ```
 ### 查看个人信息
 ```js
-		GET    http://localhost:?/user/info?token=${token}
+	GET    http://localhost:?/user/info?token=${token}
 ```
 返回=> 
 ```js
@@ -82,7 +82,7 @@
 ```
 ### 查看个人打卡记录
 ```js
-		GET    http://localhost:?/user/records?token=${token}
+	GET    http://localhost:?/user/records?token=${token}
 ```
 返回=>  
 ```js
@@ -137,7 +137,7 @@
 ## 公司
 ### 新增公司信息
 ```js
-    POST http://localhost:?/company/new?token=${token}
+  POST    http://localhost:?/company/new?token=${token}
 ```
 ```js
 {
@@ -155,14 +155,14 @@
 
 ### 更改公司logo
 ```js
-    POST http://localhost:?/company/logo?token=${token}
+  POST    http://localhost:?/company/logo?token=${token}
 ```
 //  key: logo    
 返回=>  公司信息    
 
 ### 更改公司信息
 ```js
-    POST http://localhost:?/company/information?token=${token}
+  POST    http://localhost:?/company/information?token=${token}
 ```
 ```js
 {
@@ -180,6 +180,12 @@
 
 ### 生成二维码
 ```js
-    GET http://localhost:?/qrcode/get?token=${token}
+  GET    http://localhost:?/qrcode/get?token=${token}
 ```
 返回=>  二维码链接(QRCodeUrl)    
+
+### 删除公司信息
+```js
+  DELETE    http://localhost:?/company/now?token=${token}
+```
+返回=>  状态码及'company deleted success'    

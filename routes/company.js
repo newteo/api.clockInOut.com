@@ -65,7 +65,7 @@ router.post('/logo', (req, res)=> {
 			.exec((err, company)=> {
 				if(err) return res.send({code: 404, err})
 				if(!company) return res.send({code: 404, error: 'Not found the company'})
-				delFile(company.logo)
+				if(company.logo) delFile(company.logo)
 				company.logo = host.clock + req.file.path
 				company.save((err)=> {
 					if(err) return res.send({code: 404, err})
@@ -95,6 +95,24 @@ router.post('/information', (req, res)=> {
 		company.save((err)=> {
 			if(err) return res.send({code: 404, err})
 			res.send({code: 200, company})
+		})
+	})
+})
+//删除
+router.delete('/now', (req, res)=> {
+	const userId = req.decoded.userId
+	Company.findOne({manager: userId}, {__v: 0})
+	.populate('manager', 'wxName img types remark')
+	.exec((err, company)=> {
+		if(err) return res.send({code: 404, err})
+		if(!company) return res.send({code: 404, error: 'Not found the company'})
+		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
+		if(company.logo) delFile(company.logo)
+		if(company.QRcodeUrl) delFile(company.QRcodeUrl)
+		Company.remove({_id: company._id})
+		.exec((err)=> {
+			if(err) return res.send({code: 404, err})
+			res.send({code: 200, message: 'company deleted success'})
 		})
 	})
 })
