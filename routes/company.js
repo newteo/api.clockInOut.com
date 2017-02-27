@@ -1,5 +1,6 @@
 const router = require('express').Router()
 	, User = require('../models/User')
+	, Record = require('../models/Record')
 	, Company = require('../models/Company')
 	, ApplyCache = require('../models/ApplyCache')
 	, upload = require('../utils/upload')
@@ -210,6 +211,24 @@ router.get('/staffs', (req, res)=> {
 		if(err) return res.send({code: 404, err})
 		if(!company) return res.send({code: 404, error: 'Not found the company'})
 		res.send({code: 200, staffs: company.corporateMember})
+	})
+})
+//获取单天成员打卡信息
+router.post('/staffs/day', (req, res)=> {
+	const userId = req.decoded.userId
+		, today = req.body.today
+	Company.findOne({manager: userId})
+	.exec((err, company)=> {
+		if(err) return res.send({code: 404, err})
+		if(!company) return res.send({code: 404, error: 'Not found the company'})
+		Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
+		.where('today').equals(today)
+		.populate('owner', 'wxName img status remark')
+		.populate('sweeps', 'place h_m_s')
+		.exec((err, staffRecords)=> {
+			if(err) return res.send({code: 404, err})
+			res.send({code: 200, staffRecords})
+		})
 	})
 })
 

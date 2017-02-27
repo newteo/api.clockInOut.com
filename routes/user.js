@@ -53,11 +53,12 @@ function createSweep(uId, all, rId, res) {
 		})
 	})
 }
-function createRecord(uId, all, res) {
-	if(all.hour > 9 || (all.hour == 9 && all.minute > 0)) all.normal = false
+function createRecord(t1, uId, all, res) {
+	t1 = t1.split(':')
+	if(all.hour > Number(t1[0]) || (all.hour == Number(t1[0]) && all.minute > Number(t1[1]))) all.normal = false
 	const record = new Record({
 		owner: uId,
-		companyId: null,
+		companyId: all.companyId,
 		normal: all.normal,
 		today: all.today,
 		sweeps: []
@@ -68,19 +69,22 @@ function createRecord(uId, all, res) {
 		createSweep(uId, all, record._id, res)
 	})
 }
-function sweepRange(lat, lng) {
-	var RR = 1000
-		, s = getDistance(23.466085, 116.680695, lat, lng)
-	if(s > RR) return false
+function sweepRange(companyData, lat, lng) {
+	var s = getDistance(companyData.Lat, companyData.Lng, lat, lng)
+	if(s > companyData.R) return false
 	else return true
 }
 
-router.post('/punch', (req, res)=> {
+router.post('/punch/:id', (req, res)=> {
 	const userId = req.decoded.userId
-	const all = {
+		, encryptId = req.params.id
+		, all = {
 		hour: null, minute: null, companyId: null, normal: true,
 		lng: null, lat: null, place: null, today: null, time: null
 	} 
+		, companyData = {
+		Lat: null, Lng: null, R: null, t1: null, t2: null, t3: null, t4: null, t5: null, t6: null
+	}
 	var x = Number(req.body.latitude) 
 		, y = Number(req.body.longitude)
 		, nowdate = new Date(req.body.time)
@@ -104,36 +108,56 @@ router.post('/punch', (req, res)=> {
 		all.lng = y
 		all.today = today
 		all.time = time
-		if(sweepRange(x, y)) {
-			Record.findOne({owner: userId})
-			.where('today').equals(today)
-			.exec((err, same)=> {
-				if(err) return res.send({code: 404, err})
-				if(!same) {
-					createRecord(userId, all, res)
-				} else {
-					var status = 'work'
-						, createTF = true
-					switch (same.sweeps.length) {
-						case 1: { if(hour < 12) same.normal = false
-							status = 'nowork' }; break
-						case 2: if(hour > 14 || (hour == 14 && minute > 0)) same.normal = false; break
-						case 3: { if(hour < 18) same.normal = false
-							status = 'nowork' }; break
-						case 4: if(hour > 19 || (hour == 19 && minute > 30)) same.normal = false; break
-						case 5: { if(hour < 21) same.normal = false
-							status = 'nowork' }; break
-						default: { same.normal = false, status = 'nowork', createTF = false }
+		all.companyId = encryptId
+		Company.findOne({_id: encryptId})
+		.exec((err, company)=> {
+			if(err) return res.send({code: 404, err})
+			if(!company) return res.send({code: 404, error: 'Not found the company'})
+			companyData.Lat = company.coordinate_latitude
+			companyData.Lng = company.coordinate_longitude
+			companyData.R = company.radius
+			companyData.t1 = company.commutingTime[0] || null
+			companyData.t2 = company.commutingTime[1] || null
+			companyData.t3 = company.commutingTime[2] || null
+			companyData.t4 = company.commutingTime[3] || null
+			companyData.t5 = company.commutingTime[4] || null
+			companyData.t6 = company.commutingTime[5] || null
+			companyData.t2 = companyData.t2.split(':')
+			companyData.t3 = companyData.t3.split(':')
+			companyData.t4 = companyData.t4.split(':')
+			companyData.t5 = companyData.t5.split(':')
+			companyData.t6 = companyData.t6.split(':')
+			if(sweepRange(companyData, x, y)) {
+				Record.findOne({owner: userId})
+				.where('today').equals(today)
+				.exec((err, same)=> {
+					if(err) return res.send({code: 404, err})
+					if(!same) {
+						createRecord(companyData.t1, userId, all, res)
+					} else {
+						var status = 'work'
+							, createTF = true
+						switch (same.sweeps.length) {
+							case 1: { if(hour < Number(companyData.t2[0]) || (hour == Number(companyData.t2[0]) && minute < Number(companyData.t2[1]))) same.normal = false
+								status = 'nowork' }; break
+							case 2: if(hour > Number(companyData.t3[0]) || (hour == Number(companyData.t3[0]) && minute > Number(companyData.t3[1]))) same.normal = false; break
+							case 3: { if(hour < Number(companyData.t4[0]) || (hour == Number(companyData.t4[0]) && minute < Number(companyData.t4[1]))) same.normal = false
+								status = 'nowork' }; break
+							case 4: if(hour > Number(companyData.t5[0]) || (hour == Number(companyData.t5[0]) && minute > Number(companyData.t5[1]))) same.normal = false; break
+							case 5: { if(hour < Number(companyData.t6[0]) || (hour == Number(companyData.t6[0]) && minute < Number(companyData.t6[1]))) same.normal = false
+								status = 'nowork' }; break
+							default: { same.normal = false, status = 'nowork', createTF = false }
+						}
+						if(createTF) createSweep(userId, all, same._id, res)
+						pushUpdate(userId, status, null)
+						same.save((err)=> {
+							if(err) return console.log(err)
+							if(!createTF) res.send({code: 404, error: '超过打卡次数限制(6次/天)，打卡无效'})
+						})
 					}
-					if(createTF) createSweep(userId, all, same._id, res)
-					pushUpdate(userId, status, null)
-					same.save((err)=> {
-						if(err) return console.log(err)
-						if(!createTF) res.send({code: 404, error: '超过打卡次数限制(6次/天)，打卡无效'})
-					})
-				}
-			})
-		} else res.send({code: 401, place: all.place, error: '超出范围'})
+				})
+			} else res.send({code: 401, place: all.place, error: '超出范围'})
+		})
 	})
 })
 

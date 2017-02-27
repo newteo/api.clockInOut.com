@@ -89,7 +89,7 @@
 
 ### 打卡
 ```js
-	POST    http://localhost:?/user/punch?token=${token}
+	POST    http://localhost:?/user/punch/:companyId?token=${token}
 ```
 ```js
 {
@@ -280,3 +280,56 @@
 ```
 返回=>  成员信息    
 
+### 获取单天成员打卡信息
+```js
+  GET    http://localhost:?/company/staffs?token=${token}
+```
+```js
+{
+  today: ${today}        //哪一天(String)  eg: 2017-2-14
+}
+```
+返回=>  
+```js
+{
+  "code": 200,
+  "staffRecords": [
+    {        // 1个
+      "_id": "xxx",
+      "owner": {...},
+      "normal": false,
+      "today": "2017-2-14",
+      "sweeps": [
+        {
+          "_id": "xxx",
+          "place": "xxx",
+          "h_m_s": "xx:xx:xx"
+        },
+        {
+          "_id": "xxx",
+          "place": "xxx",
+          "h_m_s": "xx:xx:xx"
+        }
+      ]
+    },
+    {        //2个
+      "_id": "xxx",
+      "owner": {...},
+      "normal": false,
+      "today": "2017-2-14",
+      "sweeps": [
+        {
+          "_id": "xxx",
+          "place": "xxx",
+          "h_m_s": "xx:xx:xx"
+        },
+        {
+          "_id": "xxx",
+          "place": "xxx",
+          "h_m_s": "xx:xx:xx"
+        }
+      ]
+    }
+  ]
+}
+```
