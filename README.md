@@ -140,16 +140,31 @@
 ```
 ```js
 {
-  name: ${name},        //(String)
-  address: ${address},        //(String)
-  latitude: ${latitude},        //(Number)
-  longitude: ${longitude},        //(Number)
-  commutingTime: ${commutingTime},        //(Array)
-  radius: ${radius}        //(Number)
+  name: ${name},        //公司名称(String)
+  address: ${address},        //公司地址(String)
+  latitude: ${latitude},        //纬度(Number)
+  longitude: ${longitude},        //经度(Number)
+  commutingTime: ${commutingTime},        //上下班时间(Array)  eg: ["9:00", "12:00", "14:00", "18:00", "19:30", "21:00"]
+  radius: ${radius},        //打卡有效范围[半径](Number)
+  // logo: ${logo},        //公司logo[key: logo](String)
+  // phone: ${phone}        //联系电话(Number)
 }
 ```
-### 新增公司logo
+返回=>  公司信息    
+
+### 更改公司logo
 ```js
     POST http://localhost:?/company/logo?token=${token}
 ```
-key: logo
+//  key: logo
+返回=>  公司信息    
+
+### 更改公司信息
+```js
+    POST http://localhost:?/company/information?token=${token}
+```
+```js
+{
+  
+}
+```

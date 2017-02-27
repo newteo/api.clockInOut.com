@@ -4,6 +4,10 @@ const mongoose = require('mongoose')
 	, Sentence = require('./Sentence')
 
 const companySchema = new Schema({
+	manager: {        //公司管理员
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	},
 	name: { type: String },
 	logo: { type: String },
 	address: { type: String },
