@@ -189,3 +189,13 @@
   DELETE    http://localhost:?/company/now?token=${token}
 ```
 返回=>  状态码及'company deleted success'    
+
+### 获取申请人员列表
+```js
+  GET    http://localhost:?/company/applylist?token=${token}
+```
+
+### 获取成员列表
+```js
+  GET    http://localhost:?/company/staff?token=${token}
+```

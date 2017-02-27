@@ -1,6 +1,7 @@
 const router = require('express').Router()
-	, Company = require('../models/Company')
 	, User = require('../models/User')
+	, Company = require('../models/Company')
+	, ApplyCache = require('../models/ApplyCache')
 	, upload = require('../utils/upload')
 	, delFile = require('../utils/delFile')
 	, host = require('../utils/hosturl')
@@ -8,6 +9,16 @@ const router = require('express').Router()
 
 checkToken(router)
 
+function createApplyCache(cId) {
+	const apply = new ApplyCache({
+		_id: cId,
+		applyMember: [ ]
+	})
+	apply.save((err)=> {
+		if(err) console.log(err)
+		// console.log('applyCache created')
+	})
+}
 function createCompany(uId, body, res) {
 	const company = new Company({
 		manager: uId,
@@ -36,6 +47,7 @@ function createCompany(uId, body, res) {
 			if(err) return console.log(err)
 			// console.log('user changed')
 		})
+		createApplyCache(company._id)
 		res.send({code: 200, types: 'manager', company})
 	})
 }
@@ -112,9 +124,40 @@ router.delete('/now', (req, res)=> {
 		Company.remove({_id: company._id})
 		.exec((err)=> {
 			if(err) return res.send({code: 404, err})
+			User.update({_id: userId}, 
+			{$set: {
+				types: 'user',
+				belongsTo: null
+			}}, 
+			{upsert: true}, 
+			(err, txt)=> {
+				if(err) return console.log(err)
+				// console.log('user changed')
+			})
 			res.send({code: 200, message: 'company deleted success'})
 		})
 	})
+})
+//获取申请人员列表
+router.get('/applylist', (req, res)=> {
+	const userId = req.decoded.userId
+	Company.findOne({manager: userId})
+	.populate('manager', 'wxName img types remark')
+	.exec((err, company)=> {
+		if(err) return res.send({code: 404, err})
+		if(!company) return res.send({code: 404, error: 'Not found the company'})
+		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
+		ApplyCache.findOne({_id: company._id}, {__v: 0, _id: 0})
+		.populate('applyMember', 'wxName img types belongsTo')
+		.exec((err, applycache)=> {
+			if(err) return res.send({code: 404, err})
+			res.send({code: 200, applycache})
+		})
+	})
+})
+//获取成员列表
+router.get('/staff', (req, res)=> {
+	const userId = req.decoded.userId
 })
 
 module.exports = router
