@@ -260,8 +260,23 @@
 ```js
   GET    http://localhost:?/company/applylist?token=${token}
 ```
+返回=>  申请人员信息列表    
+
+### 验证申请人员
+```js
+  POST    http://localhost:?/company/applylist/:applyId?token=${token}
+```
+```js
+{
+  validation: ${validation}        //验证('pass' or 'nopass')
+}
+```
+'pass'返回=>  {code: 200, message: 'add success'}    
+'nopass'返回=>  {code: 200, message: 'refuse success'}    
 
 ### 获取成员列表
 ```js
-  GET    http://localhost:?/company/staff?token=${token}
+  GET    http://localhost:?/company/staffs?token=${token}
 ```
+返回=>  成员信息    
+
