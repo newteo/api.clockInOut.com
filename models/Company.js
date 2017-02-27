@@ -20,6 +20,7 @@ const companySchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Sentence'
 	}],
+	QRcodeUrl: { type: String },        //打卡二维码
 	remark: { type: String },
 	createdTime: {
 		type: Date, 

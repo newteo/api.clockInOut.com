@@ -159,10 +159,4 @@ router.get('/records', (req, res)=> {
 	})
 })
 
-router.get('/cos', (req, res)=> {
-	const xx = getDistance(23.468152, 116.692299, 23.454166, 116.690709)
-	res.send({num: xx})
-})
-
-
 module.exports = router

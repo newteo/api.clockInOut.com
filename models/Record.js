@@ -15,6 +15,7 @@ const recordSchema = new Schema({
 	},
 	normal: { type: Boolean },        //是否异常
 	today: { type: String },        //日期
+	manHour: { type: Number },        //工时(?h/day)
 	sweeps: [{ 
 		type: Schema.Types.ObjectId, 
 		ref: 'Sweep'

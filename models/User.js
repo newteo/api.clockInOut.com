@@ -9,6 +9,10 @@ const userSchema = new Schema({
 	img: { type: String },
 	employeeID: { type: String },
 	realName: { type: String },
+	types: {        //类型
+		type: String,
+		enum: ['manager', 'staff', 'user'] 
+	},
 	status: { 
 		type: String,
 		enum: ['work', 'nowork'] 
@@ -21,7 +25,7 @@ const userSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'Record'
 	}],
-	remark: { type: String },
+	remark: { type: String },        //*留给公司备注*
 	createdTime: {
 		type: Date, 
 		default: Date.now

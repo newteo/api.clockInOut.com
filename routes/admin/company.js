@@ -1,7 +1,5 @@
 const router = require('express').Router()
 	, Company = require('../../models/Company')
-	, getQRCode = require('../../utils/getQRCode')
-	, fs = require('fs')
 
 router.post('/', (req, res)=> {
 	const company = new Company({
@@ -45,23 +43,6 @@ router.patch('/:id', (req, res)=> {
 			res.send(company)
 		})
 	})
-})
-
-getQRCode(router)
-router.get('/token', (req, res)=> {
-	var result = req.result
-		, fileName = JSON.parse(result.res.rawHeaders[7].substring(21))
-		, filepath = `public/QRcodes/${fileName}`
-		, fileStream = fs.createWriteStream(filepath, { 
-			flags: 'w', 
-			defaultEncoding: 'base64', 
-			fd: null, 
-			mode: 0o666, 
-			autoClose: true 
-	})
-	fileStream.write(result.body)
-	fileStream.end(console.log('success'))
-	res.send(filepath)
 })
 
 module.exports = router

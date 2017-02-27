@@ -20,7 +20,9 @@ app.use('/', routes.home)
 app.use('/reg', routes.reg)
 app.use('/login', routes.login)
 app.use('/user', routes.user)
+app.use('/company', routes.company)
 app.use('/session', routes.session)
+app.use('/qrcode', routes.qrcode)
 app.use('/admin', admin)
 
 app.listen(port, ()=> {

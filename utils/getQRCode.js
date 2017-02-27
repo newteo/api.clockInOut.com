@@ -6,15 +6,18 @@ function getQRCode(routers) {
 	getAccessToken(routers)
 	routers.use('*', (req, res, next)=> {
 		const accessToken = req.accessToken
+			, path = req.body.path
+			, width = req.body.width
 		request.post(`${wxApis.qrcode}?access_token=${accessToken}`)
 		.send({
-			path: 'newteo',
-			width: 580
+			path: path,
+			width: width
 		})
 		.set('Accept', 'application/json')
 		.end((err, result)=> {
 			if(err) return console.log(err)
-			req.result = result
+			req.resultBuffer = result.body
+			req.resultFlie = result.res.rawHeaders
 			next()
 		})
 	})

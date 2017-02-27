@@ -19,7 +19,7 @@ function setinfo(wxInfo, res) {
 			(err, token)=> {
 				if(err) return res.send({code: 404, err})
 				// console.log('ok')
-				res.send({code: 200, status: same.status, token: token})
+				res.send({code: 200, types: same.types, status: same.status, token: token})
 			})
 		} else {
 			const info = new User({
@@ -28,6 +28,7 @@ function setinfo(wxInfo, res) {
 				img: wxInfo.avatarUrl,
 				employeeID: null,
 				realName: null,
+				types: 'user',
 				status: 'nowork',
 				belongsTo: null,
 				punchCardRecords: [],
@@ -40,7 +41,7 @@ function setinfo(wxInfo, res) {
 				{expiresIn: '7d'}, 
 				(err, token)=> {
 					if(err) return res.send({code: 404, err})
-					res.send({code: 200, status: info.status, token: token})
+					res.send({code: 200, types: info.types, status: info.status, token: token})
 				})
 			})
 		}
