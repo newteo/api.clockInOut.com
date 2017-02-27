@@ -12,7 +12,6 @@ function getAccessToken(router) {
 			if(err) return res.send({code: 404, err})
 			var accessToken = JSON.parse(result.text).access_token
 			req.accessToken = accessToken
-			req.decoded = req.decoded
 			next()
 		})
 	})

@@ -6,11 +6,11 @@ const router = require('express').Router()
 
 getQRCode(router)
 router.get('/get', (req, res)=> {
-
+	const userId = req.decoded.userId
 	var resultFlie = req.resultFlie
 		, resultBuffer = req.resultBuffer
 		// , fileName = JSON.parse(resultFlie[7].substring(21))
-		, fileName = Date.now() + 'jpg'
+		, fileName = Date.now() + '.jpg'
 		, filepath = `public/QRcodes/${fileName}`
 		, fileStream = fs.createWriteStream(filepath, { 
 			flags: 'w', 
@@ -20,7 +20,14 @@ router.get('/get', (req, res)=> {
 			autoClose: true 
 	})
 	fileStream.write(resultBuffer)
-	fileStream.end(console.log('success'))
+	fileStream.end(
+		Company.update({manager: userId}, 
+		{$set: {QRcodeUrl: host.clock + filepath}}, 
+		(err, txt)=> {
+			if(err) return console.log(err)
+			// console.log('+')
+		})
+	)
 	res.send({QRCodeUrl: host.clock + filepath})
 })
 

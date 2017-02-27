@@ -178,7 +178,8 @@
 ```
 返回=>  公司信息 + 管理员简单信息    
 
-### 
+### 生成二维码
 ```js
-    POST http://localhost:?/qrcode/get?token=${token}
+    GET http://localhost:?/qrcode/get?token=${token}
 ```
+返回=>  二维码链接(QRCodeUrl)    
