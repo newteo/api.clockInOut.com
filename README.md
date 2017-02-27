@@ -133,3 +133,23 @@
   ]
 }
 ```
+## 公司
+### 新增公司信息
+```js
+    POST http://localhost:?/company/new?token=${token}
+```
+```js
+{
+  name: ${name},        //(String)
+  address: ${address},        //(String)
+  latitude: ${latitude},        //(Number)
+  longitude: ${longitude},        //(Number)
+  commutingTime: ${commutingTime},        //(Array)
+  radius: ${radius}        //(Number)
+}
+```
+### 新增公司logo
+```js
+    POST http://localhost:?/company/logo?token=${token}
+```
+key: logo
