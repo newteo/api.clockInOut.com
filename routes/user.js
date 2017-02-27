@@ -4,6 +4,7 @@ const router = require('express').Router()
 	, Sweep = require('../models/Sweep')
 	, Record = require('../models/Record')
 	, Company = require('../models/Company')
+	, ApplyCache = require('../models/ApplyCache')
 	, checkToken = require('../utils/checkToken')
 	, getDistance = require('../utils/getDistance')
 	, key = process.env.QQKEY
@@ -175,6 +176,27 @@ router.get('/company/:id', (req, res)=> {
 		if(err) return res.send({code: 404, err})
 		if(!company) return res.send({code: 404, error: 'Not found the company'})
 		res.send({code: 200, company})
+	})
+})
+//申请加入公司
+router.post('/company', (req, res)=> {
+	const userId = req.decoded.userId
+		, companyId = req.body.companyId
+	ApplyCache.findOne({_id: companyId})
+	.where('applyMember').in([userId])
+	.exec((err, exist)=> {
+		if(err) return res.send({code: 404, err})
+		if(exist) {
+			return res.send({code: 202, message: '已提交过申请'})
+		} else {
+			ApplyCache.findOneAndUpdate({_id: companyId}, 
+			{$push: {applyMember: userId}}, 
+			{new: true}, 
+			(err, applycache)=> {
+				if(err) return res.send({code: 404, err})
+				res.send({code: 200, message: '申请已提交'})
+			})
+		}
 	})
 })
 

@@ -74,6 +74,18 @@
   }
 }
 ```
+### 申请加入公司
+```js
+  POST    http://localhost:?/user/company?token=${token}
+```
+```js
+{
+  companyId: ${companyId}        //公司Id
+}
+```
+未提交的返回=>  {code: 200, message: '申请已提交'}    
+提交过的返回=>  {code: 202, message: '已提交过申请'}    
+
 
 ### 打卡
 ```js

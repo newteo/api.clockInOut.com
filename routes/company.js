@@ -155,6 +155,29 @@ router.get('/applylist', (req, res)=> {
 		})
 	})
 })
+//
+router.post('/applylist/:id', (req, res)=> {
+	const userId = req.decoded.userId
+		, applyId = req.params.id
+	if(req.body.validation == 'pass') {
+		Company.findOne({manager: userId})
+		.exec((err, company)=> {
+			if(err) return res.send({code: 404, err})
+			if(!company) return res.send({code: 404, error: 'Not found the company'})
+			ApplyCache.findOne({_id: company._id})
+			.where('applyMember').in([applyId])
+			.exec((err, applycache)=> {
+				if(err) return res.send({code: 404, err})
+				if(!applycache) return res.send({code: 204, message: 'Id is not in the list'})
+				
+			})
+		})
+	} else if(req.body.validation == 'nopass') {
+
+	} else {
+		res.send({code: 404, error: 'validation is pass or nopass'})
+	}
+})
 //获取成员列表
 router.get('/staff', (req, res)=> {
 	const userId = req.decoded.userId
