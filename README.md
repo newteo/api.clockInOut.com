@@ -133,6 +133,7 @@
   ]
 }
 ```
+
 ## 公司
 ### 新增公司信息
 ```js
@@ -156,7 +157,7 @@
 ```js
     POST http://localhost:?/company/logo?token=${token}
 ```
-//  key: logo
+//  key: logo    
 返回=>  公司信息    
 
 ### 更改公司信息
@@ -165,6 +166,19 @@
 ```
 ```js
 {
-  
+  name: ${name},        //公司名称(String)
+  address: ${address},        //公司地址(String)
+  phone: ${phone},        //联系电话(Number)
+  latitude: ${latitude},        //纬度(Number)
+  longitude: ${longitude},        //经度(Number)
+  commutingTime: ${commutingTime},        //上下班时间(Array)
+  radius: ${radius},        //打卡有效范围(Number)
+  remark: ${remark}        //公司备注(String)
 }
+```
+返回=>  公司信息 + 管理员简单信息    
+
+### 
+```js
+    POST http://localhost:?/qrcode/get?token=${token}
 ```

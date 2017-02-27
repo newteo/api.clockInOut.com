@@ -4,12 +4,13 @@ const router = require('express').Router()
 	, getQRCode = require('../utils/getQRCode')
 	, host = require('../utils/hosturl')
 
-
 getQRCode(router)
-router.post('/get', (req, res)=> {
+router.get('/get', (req, res)=> {
+
 	var resultFlie = req.resultFlie
 		, resultBuffer = req.resultBuffer
-		, fileName = JSON.parse(resultFlie[7].substring(21))
+		// , fileName = JSON.parse(resultFlie[7].substring(21))
+		, fileName = Date.now() + 'jpg'
 		, filepath = `public/QRcodes/${fileName}`
 		, fileStream = fs.createWriteStream(filepath, { 
 			flags: 'w', 
