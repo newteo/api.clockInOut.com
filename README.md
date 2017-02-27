@@ -2,7 +2,7 @@
 打卡小程序API
 
 # 小程序
-## 
+## 登录
 ### 授权登录
 ```js
 	GET    http://localhost:?/session?code=${code}&iv=${iv}&encryptedData=${encryptedData}&newteo=${newteo}
@@ -20,6 +20,58 @@
 {
 	status: "nowork",
 	token: "xxx"
+}
+```
+
+## 个人
+### 查看所有公司列表
+```js
+  GET    http://localhost:?/user/companies?token=${token}
+```
+返回=>    
+```js
+{
+  "code": 200,
+  "companies": [
+    {
+      "_id": "xxx",        //
+      "name": "xxx",        //公司名称(String)
+      "logo": "xxx",        //公司logo(String)
+      "address": "xxx"        //公司地址(String)
+    },
+    {
+      "_id": "xxx",
+      "name": "xxx",
+      "logo": "xxx",
+      "address": "xxx"
+    }
+  ]
+}
+```
+### 查看公司详情
+```js
+  GET    http://localhost:?/user/company/:id?token=${token}
+```
+返回=>    
+```js
+{
+  "code": 200,
+  "company": {
+    "_id": "xxx",
+    "updatedTime": "xxx",
+    "manager": "xxx",
+    "name": "xxx",
+    "logo": "xxx",
+    "address": "xxx",
+    "phone": 12345678901,
+    "radius": 100,
+    "QRcodeUrl": "xxx",
+    "remark": "xxx",
+    "createdTime": "xxx",
+    "mottos": [],
+    "corporateMember": [],
+    "commutingTime": []
+  }
 }
 ```
 
@@ -133,6 +185,8 @@
   ]
 }
 ```
+
+
 
 ## 公司
 ### 新增公司信息

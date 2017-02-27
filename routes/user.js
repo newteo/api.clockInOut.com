@@ -1,8 +1,9 @@
 const router = require('express').Router()
 	, request = require('superagent')
 	, User = require('../models/User')
-	, Record = require('../models/Record')
 	, Sweep = require('../models/Sweep')
+	, Record = require('../models/Record')
+	, Company = require('../models/Company')
 	, checkToken = require('../utils/checkToken')
 	, getDistance = require('../utils/getDistance')
 	, key = process.env.QQKEY
@@ -55,7 +56,7 @@ function createRecord(uId, all, res) {
 	if(all.hour > 9 || (all.hour == 9 && all.minute > 0)) all.normal = false
 	const record = new Record({
 		owner: uId,
-		compenyId: null,
+		companyId: null,
 		normal: all.normal,
 		today: all.today,
 		sweeps: []
@@ -76,7 +77,7 @@ function sweepRange(lat, lng) {
 router.post('/punch', (req, res)=> {
 	const userId = req.decoded.userId
 	const all = {
-		hour: null, minute: null, compenyId: null, normal: true,
+		hour: null, minute: null, companyId: null, normal: true,
 		lng: null, lat: null, place: null, today: null, time: null
 	} 
 	var x = Number(req.body.latitude) 
@@ -156,6 +157,24 @@ router.get('/records', (req, res)=> {
 	.exec((err, records)=> {
 		if(err) return res.send({code: 404, err})
 		res.send({code: 200, records})
+	})
+})
+//查看所有公司列表
+router.get('/companies', (req, res)=> {
+	Company.find({}, {name:1, logo:1, address:1})
+	.exec((err, companies)=> {
+		if(err) return res.send({code: 404, err})
+		res.send({code: 200, companies})
+	})
+})
+//单公司详情
+router.get('/company/:id', (req, res)=> {
+	const companyId = req.params.id
+	Company.findOne({_id: companyId}, {__v:0, coordinate_latitude:0, coordinate_longitude:0})
+	.exec((err, company)=> {
+		if(err) return res.send({code: 404, err})
+		if(!company) return res.send({code: 404, error: 'Not found the company'})
+		res.send({code: 200, company})
 	})
 })
 
