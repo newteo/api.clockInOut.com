@@ -122,14 +122,15 @@ router.delete('/now', (req, res)=> {
 		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
 		if(company.logo) delFile(company.logo)
 		if(company.QRcodeUrl) delFile(company.QRcodeUrl)
+		ApplyCache.remove({_id: company._id})
+		.exec((err)=> {
+			if(err) return console.log(err)
+		})
 		Company.remove({_id: company._id})
 		.exec((err)=> {
 			if(err) return res.send({code: 404, err})
 			User.update({_id: userId}, 
-			{$set: {
-				types: 'user',
-				belongsTo: null
-			}}, 
+			{$set: { types: 'user', belongsTo: null }}, 
 			{upsert: true}, 
 			(err, txt)=> {
 				if(err) return console.log(err)
@@ -176,7 +177,7 @@ router.post('/applylist/:id', (req, res)=> {
 					if(err) return res.send({code: 404, err})
 					company.save((err)=> {
 						if(err) return res.send({code: 404, err})
-						User.update({_id: uId}, 
+						User.update({_id: applyId}, 
 						{$set: { types: 'staff', belongsTo: company._id }}, 
 						{upsert: true}, 
 						(err, txt)=> {
