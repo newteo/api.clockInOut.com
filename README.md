@@ -405,7 +405,8 @@
 ```js
   GET    http://localhost:?/newteomemo/all?token=${token}
 ```
+
 ### 删除备忘
 ```js
-  DELETE    http://localhost:?/newteomemo/all?token=${token}
+  DELETE    http://localhost:?/newteomemo/one/:memoId?token=${token}
 ```
