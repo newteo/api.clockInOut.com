@@ -152,7 +152,7 @@ router.post('/punch/:id', (req, res)=> {
 						pushUpdate(userId, status, null)
 						same.save((err)=> {
 							if(err) return console.log(err)
-							if(!createTF) res.send({code: 404, error: '超过打卡次数限制(6次/天)，打卡无效'})
+							if(!createTF) return res.send({code: 404, error: '超过打卡次数限制(6次/天)，打卡无效'})
 						})
 					}
 				})

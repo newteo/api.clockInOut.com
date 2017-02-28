@@ -282,7 +282,7 @@
 
 ### 获取单天成员打卡信息
 ```js
-  GET    http://localhost:?/company/staffs?token=${token}
+  GET    http://localhost:?/company/staffs/day?token=${token}
 ```
 ```js
 {

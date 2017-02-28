@@ -176,6 +176,13 @@ router.post('/applylist/:id', (req, res)=> {
 					if(err) return res.send({code: 404, err})
 					company.save((err)=> {
 						if(err) return res.send({code: 404, err})
+						User.update({_id: uId}, 
+						{$set: { types: 'staff', belongsTo: company._id }}, 
+						{upsert: true}, 
+						(err, txt)=> {
+							if(err) return console.log(err)
+							// console.log('user changed')
+						})
 						res.send({code: 200, message: 'add success'})
 					})
 				})
