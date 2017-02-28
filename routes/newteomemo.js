@@ -2,6 +2,7 @@ const router = require('express').Router()
 	, moment = require('moment')
 	, request = require('superagent')
 	, checkOldToken = require('../utils/checkOldToken')
+	, filters = require('../utils/filter')
 	, Older = require('../models/Older')
 	, Memo = require('../models/Memo')
 
@@ -18,7 +19,7 @@ router.post('/new', (req, res)=> {
 		lng: lnglng,
 		lat: latlat,
 		address: address,
-		input: input
+		input: filters(input)
 	})
 	memo.save((err)=> {
 		if(err) return res.send({code: 404, err})
