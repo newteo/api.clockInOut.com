@@ -46,7 +46,7 @@ function createSweep(uId, all, rId, res) {
 			// console.log('sw+')
 		})
 		Sweep.findOne({_id: sweepp._id}, {__v:0, lng:0, lat:0, })
-		.populate('owner', '-_id updatedTime wxName img employeeID realName status')
+		.populate('owner', 'updatedTime wxName img employeeID realName status')
 		.exec((err, sweep)=> {
 			if(err) return res.send({code: 404, err})
 			res.send({code: 200, sweep})
@@ -176,8 +176,8 @@ router.get('/info', (req, res)=> {
 router.get('/records', (req, res)=> {
 	const userId = req.decoded.userId
 	Record.find({owner: userId}, {__v:0})
-	.populate('owner', '-_id wxName img employeeID realName status')
-	.populate('sweeps', '-_id place h_m_s createdTime')
+	.populate('owner', 'wxName img employeeID realName status')
+	.populate('sweeps', 'place h_m_s createdTime')
 	.sort({createdTime: -1})
 	.exec((err, records)=> {
 		if(err) return res.send({code: 404, err})
