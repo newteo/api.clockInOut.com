@@ -9,7 +9,7 @@ const memoSchema = new Schema({
 	},
 	lng: { type: Number },       //经度
 	lat: { type: Number },       //纬度
-	place: { type: String },        //地点
+	address: { type: String },        //地点
 	input: { type: String },
 	createdTime: {
 		type: Date, 

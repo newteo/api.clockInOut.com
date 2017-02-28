@@ -377,7 +377,7 @@
   newteo: ${newteo}        //require!
 }
 ```
-### 授权登录
+### 添加备忘
 ```js
   POST    http://localhost:?/newteomemo/new?token=${token}
 ```
@@ -385,7 +385,8 @@
 {
   longitude: ${longitude},        //经度(Number)
   latitude: ${latitude},        //纬度(Number)
-  input: ${input}        //备注(String)
+  input: ${input},        //备注(String)
+  address: ${address}        //位置(String)
 }
 ```
 返回=>  
@@ -394,7 +395,7 @@
   "owner": "xxx",
   "lng": xxx,
   "lat": xxx,
-  "place": "xxx",
+  "address": "xxx",
   "input": "xxx",
   "_id": "xxx",
   "createdTime": "xxx"

@@ -1,9 +1,9 @@
 const router = require('express').Router()
+	, moment = require('moment')
 	, request = require('superagent')
 	, checkOldToken = require('../utils/checkOldToken')
 	, Older = require('../models/Older')
 	, Memo = require('../models/Memo')
-	, key = process.env.QQKEY
 
 checkOldToken(router)
 
@@ -12,39 +12,66 @@ router.post('/new', (req, res)=> {
 		, lnglng = Number(req.body.longitude)
 		, latlat = Number(req.body.latitude)
 		, input = req.body.input
-	var places
-	request.get(`https://apis.map.qq.com/ws/geocoder/v1/?location=${latlat},${lnglng}&coord_type=3&key=${key}`)
-	.end((err, qqtxt)=> {
+		, address = req.body.address
+	const memo = new Memo({
+		owner: olderId,
+		lng: lnglng,
+		lat: latlat,
+		address: address,
+		input: input
+	})
+	memo.save((err)=> {
 		if(err) return res.send({code: 404, err})
-		if(JSON.parse(qqtxt.text).status == 365) return res.send({code: 365, error: '纬度不能超过±90'})
-		if(JSON.parse(qqtxt.text).result.formatted_addresses) {
-			places = JSON.parse(qqtxt.text).result.formatted_addresses.recommend
-		} else { places = JSON.parse(qqtxt.text).result.address }
-		const memo = new Memo({
-			owner: olderId,
-			lng: lnglng,
-			lat: latlat,
-			place: places,
-			input: input
+		Older.update({_id: olderId}, 
+		{$push: {memoes: memo._id}}, 
+		(err, txt)=> {
+			if(err) return console.log(err)
 		})
-		memo.save((err)=> {
-			if(err) return res.send({code: 404, err})
-			Older.update({_id: olderId}, 
-			{$push: {memoes: memo._id}}, 
-			(err, txt)=> {
-				if(err) return console.log(err)
-			})
-			res.send({code: 200, memo})
-		})
+		res.send({code: 200, memo})
 	})
 })
 
-// router.get('/all', (req, res)=> {
+router.get('/all', (req, res)=> {
+	const olderId = req.decoded.userId
+	var memos = []
+		, createdTime
+	Memo.find({owner: olderId})
+	.exec((err, memoss)=> {
+		if(err) return res.send({code: 404, err})
+		memoss.map((item)=> {
+			createdTime = moment(item.createdTime).format('YYYY-MM-DD dddd h:mm:ss')
+			memos.push({
+				_id: item._id,
+				address: item.address,
+				input: item.input,
+				createdTime: createdTime
+			})
+		})
+		res.send({code: 200, memos})
+	})
+})
 
-// })
-
-// router.delete('/one/:id', (req, res)=> {
-
-// })
+router.delete('/one/:id', (req, res)=> {
+	const olderId = req.decoded.userId
+		, memoId = req.params.id
+	Older.findOne({_id: olderId})
+	.where('memoes').in([memoId])
+	.exec((err, exist)=> {
+		if(err) return res.send({code: 404, err})
+		console.log(exist)
+		if(exist) {
+			Older.update({_id: olderId}, 
+			{$pull: {memoes: memoId}}, 
+			(err, txt)=> {
+				if(err) return console.log(err)
+			})
+			Memo.remove({_id: memoId})
+			.exec((err)=> {
+				if(err) return res.send({code: 404, err})
+				res.send({code: 200, message: 'delete success'})
+			})
+		} else res.send({code: 404, error: 'Not found this memo'})
+	})
+})
 
 module.exports = router
