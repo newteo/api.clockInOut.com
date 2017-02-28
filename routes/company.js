@@ -239,7 +239,7 @@ router.get('/staffs/day', (req, res)=> {
 		})
 	})
 })
-//
+//改备注
 router.post('/staffs/:id/remark', (req, res)=> {
 	const userId = req.decoded.userId
 		, staffId = req.params.id
@@ -254,6 +254,51 @@ router.post('/staffs/:id/remark', (req, res)=> {
 		(err, user)=> {
 			if(err) return res.send({code: 404, err})
 			res.send({code: 200, user})
+		})
+	})
+})
+// /人/月
+router.get('/staffs/:id/:year/:month', (req, res)=> {
+	const userId = req.decoded.userId
+		, staffId = req.params.id
+		, yy = req.params.year
+		, mm = req.params.month
+		, re = new RegExp(yy + '-' + mm,'i')
+	Company.findOne({manager: userId})
+	.where('corporateMember').in([staffId])
+	.exec((err, company)=> {
+		if(err) return res.send({code: 404, err})
+		if(!company) return res.send({code: 404, error: 'Not found the company or staff Id'})
+		Record.find({owner: staffId})
+		.where('today').regex(re)
+		.populate('owner', 'wxName img remark')
+		.populate('sweeps', 'place h_m_s')
+		.exec((err, records)=> {
+			if(err) return res.send({code: 404, err})
+			res.send({code: 200, records})
+		})
+	})
+})
+// /人/日
+router.get('/staffs/:id/:year/:month/:day', (req, res)=> {
+	const userId = req.decoded.userId
+		, staffId = req.params.id
+		, yy = req.params.year
+		, mm = req.params.month
+		, dd = req.params.day
+		, re = new RegExp(yy + '-' + mm + '-' + dd,'i')
+	Company.findOne({manager: userId})
+	.where('corporateMember').in([staffId])
+	.exec((err, company)=> {
+		if(err) return res.send({code: 404, err})
+		if(!company) return res.send({code: 404, error: 'Not found the company or staff Id'})
+		Record.find({owner: staffId})
+		.where('today').regex(re)
+		.populate('owner', 'wxName img remark')
+		.populate('sweeps', 'place h_m_s')
+		.exec((err, records)=> {
+			if(err) return res.send({code: 404, err})
+			res.send({code: 200, records})
 		})
 	})
 })

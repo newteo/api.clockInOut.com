@@ -223,5 +223,30 @@ router.post('/company', (req, res)=> {
 		}
 	})
 })
+//退出公司
+router.delete('/tofree', (req, res)=> {
+	const userId = req.decoded.userId
+	User.findOne({_id: userId})
+	.exec((err, user)=> {
+		if(err) return res.send({code: 404, err})
+		if(!user) return res.send({code: 404, error: 'Your info has been deleted'})
+		if(user.belongsTo) {
+			Company.update({_id: user.belongsTo}, 
+			{$pull: {corporateMember: userId}}, 
+			(err, txt)=> {
+				if(err) return console.log(err)
+			})
+		} 
+		// else return res.send({code: 404, error: 'you belong not to the company'})
+		user.types = 'user'
+		user.belongsTo = null
+		user.remark = null
+		user.save((err)=> {
+			if(err) return res.send({code: 404, err})
+			res.send({code: 200, user})
+		})
+	})
+})
+
 
 module.exports = router

@@ -84,7 +84,13 @@
 }
 ```
 未提交的返回=>  {code: 200, message: '申请已提交'}    
-提交过的返回=>  {code: 202, message: '已提交过申请'}    
+提交过的返回=>  {code: 202, message: '已提交过申请'}
+
+### 退出公司
+```js
+  DELETE    http://localhost:?/user/tofree?token=${token}
+```
+返回=>  个人信息    
 
 
 ### 打卡
@@ -333,3 +339,26 @@
   ]
 }
 ```
+
+### 修改员工备注
+```js
+  POST    http://localhost:?/company/staffs/:staffId/remark?token=${token}
+```
+```js
+{
+  remark: ${remark}        //备注(String)
+}
+```
+返回=>  员工信息    
+
+### 获取某员工某月打卡记录
+```js
+  GET    http://localhost:?/company/staffs/:staffId/:Year/:Month?token=${token}
+```
+返回=>  打卡记录    
+
+### 获取某员工某天打卡记录
+```js
+  GET    http://localhost:?/company/staffs/:staffId/:Year/:Month/:Day?token=${token}
+```
+返回=>  打卡记录    
