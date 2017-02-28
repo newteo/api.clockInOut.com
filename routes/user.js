@@ -96,7 +96,7 @@ router.post('/punch/:id', (req, res)=> {
 		, second = nowdate.getSeconds()
 		, today = `${year}-${month}-${day}`
 		, time = `${hour}:${minute}:${second}`
-	request.get(`http://apis.map.qq.com/ws/geocoder/v1/?location=${x},${y}&coord_type=3&key=${key}`)
+	request.get(`https://apis.map.qq.com/ws/geocoder/v1/?location=${x},${y}&coord_type=3&key=${key}`)
 	.end((err, qqtxt)=> {
 		if(err) return res.send({code: 404, err})
 		if(JSON.parse(qqtxt.text).result.formatted_addresses) {
