@@ -39,7 +39,7 @@ router.get('/all', (req, res)=> {
 	.exec((err, memoss)=> {
 		if(err) return res.send({code: 404, err})
 		memoss.map((item)=> {
-			createdTime = moment(item.createdTime).format('YYYY-MM-DD dddd h:mm:ss')
+			createdTime = moment(item.createdTime).format('YYYY-MM-DD h:mm:ss')
 			memos.push({
 				_id: item._id,
 				address: item.address,
