@@ -401,3 +401,11 @@
   "createdTime": "xxx"
 }
 ```
+### 查看备忘
+```js
+  GET    http://localhost:?/newteomemo/all?token=${token}
+```
+### 删除备忘
+```js
+  DELETE    http://localhost:?/newteomemo/all?token=${token}
+```
