@@ -1,4 +1,6 @@
 module.exports = {
+	newteo: require('./newteo'),
+	newteomemo: require('./newteomemo'),
 	home: require('./home'),
 	reg: require('./reg'),
 	login: require('./login'),

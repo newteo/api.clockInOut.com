@@ -16,6 +16,8 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use('/public', express.static('public'))
 
+app.use('/newteo', routes.newteo)
+app.use('/newteomemo', routes.newteomemo)
 app.use('/', routes.home)
 app.use('/reg', routes.reg)
 app.use('/login', routes.login)

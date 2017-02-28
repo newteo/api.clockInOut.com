@@ -361,4 +361,42 @@
 ```js
   GET    http://localhost:?/company/staffs/:staffId/:Year/:Month/:Day?token=${token}
 ```
-返回=>  打卡记录    
+返回=>  打卡记录
+
+
+## 备忘
+### 授权登录
+```js
+  GET    http://localhost:?/newteo/session?code=${code}&iv=${iv}&encryptedData=${encryptedData}&newteo=${newteo}
+```
+```js
+{
+  iv: ${iv},        //require!
+  code: ${code},        //require!
+  encryptedData: ${encryptedData},        //require!
+  newteo: ${newteo}        //require!
+}
+```
+### 授权登录
+```js
+  POST    http://localhost:?/newteomemo/new?token=${token}
+```
+```js
+{
+  longitude: ${longitude},        //经度(Number)
+  latitude: ${latitude},        //纬度(Number)
+  input: ${input}        //备注(String)
+}
+```
+返回=>  
+```js
+{
+  "owner": "xxx",
+  "lng": xxx,
+  "lat": xxx,
+  "place": "xxx",
+  "input": "xxx",
+  "_id": "xxx",
+  "createdTime": "xxx"
+}
+```

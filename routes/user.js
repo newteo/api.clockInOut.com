@@ -78,11 +78,11 @@ function sweepRange(companyData, lat, lng) {
 router.post('/punch/:id', (req, res)=> {
 	const userId = req.decoded.userId
 		, encryptId = req.params.id
-		, all = {
+	var all = {
 		hour: null, minute: null, companyId: null, normal: true,
 		lng: null, lat: null, place: null, today: null, time: null
 	} 
-		, companyData = {
+	var companyData = {
 		Lat: null, Lng: null, R: null, t1: null, t2: null, t3: null, t4: null, t5: null, t6: null
 	}
 	var x = Number(req.body.latitude) 
