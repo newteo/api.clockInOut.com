@@ -222,9 +222,9 @@ router.get('/staffs', (req, res)=> {
 	})
 })
 //获取单天成员打卡信息
-router.post('/staffs/day', (req, res)=> {
+router.get('/staffs/day', (req, res)=> {
 	const userId = req.decoded.userId
-		, today = req.body.today
+		, today = req.query.today
 	Company.findOne({manager: userId})
 	.exec((err, company)=> {
 		if(err) return res.send({code: 404, err})
@@ -238,6 +238,24 @@ router.post('/staffs/day', (req, res)=> {
 			res.send({code: 200, staffRecords})
 		})
 	})
+})
+//
+router.post('/staffs/:id/remark', (req, res)=> {
+	// const userId = req.decoded.userId
+	// 	, today = req.body.today
+	// Company.findOne({manager: userId})
+	// .exec((err, company)=> {
+	// 	if(err) return res.send({code: 404, err})
+	// 	if(!company) return res.send({code: 404, error: 'Not found the company'})
+	// 	Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
+	// 	.where('today').equals(today)
+	// 	.populate('owner', 'wxName img status remark')
+	// 	.populate('sweeps', 'place h_m_s')
+	// 	.exec((err, staffRecords)=> {
+	// 		if(err) return res.send({code: 404, err})
+	// 		res.send({code: 200, staffRecords})
+	// 	})
+	// })
 })
 
 module.exports = router

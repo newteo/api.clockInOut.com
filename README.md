@@ -282,11 +282,11 @@
 
 ### 获取单天成员打卡信息
 ```js
-  POST    http://localhost:?/company/staffs/day?token=${token}
+  GET    http://localhost:?/company/staffs/day?token=${token}
 ```
 ```js
 {
-  today: ${today}        //哪一天(String)  eg: 2017-2-14
+  today: ${today}        require!//哪一天(String)  eg: 2017-2-14
 }
 ```
 返回=>  
