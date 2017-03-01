@@ -7,6 +7,7 @@ const router = require('express').Router()
 	, ApplyCache = require('../models/ApplyCache')
 	, checkToken = require('../utils/checkToken')
 	, getDistance = require('../utils/getDistance')
+	, makeHash = require('../utils/makeHash')
 	, key = process.env.QQKEY
 
 checkToken(router)
@@ -75,9 +76,9 @@ function sweepRange(companyData, lat, lng) {
 	else return true
 }
 
-router.post('/punch/:id', (req, res)=> {
+router.post('/punch/', (req, res)=> {
 	const userId = req.decoded.userId
-		, encryptId = req.params.id
+		, encryptId = req.query.encrypt
 	var all = {
 		hour: null, minute: null, companyId: null, normal: true,
 		lng: null, lat: null, place: null, today: null, time: null
@@ -138,17 +139,26 @@ router.post('/punch/:id', (req, res)=> {
 						var status = 'work'
 							, createTF = true
 						switch (same.sweeps.length) {
-							case 1: { if(hour < Number(companyData.t2[0]) || (hour == Number(companyData.t2[0]) && minute < Number(companyData.t2[1]))) same.normal = false
-								status = 'nowork' }; break
-							case 2: if(hour > Number(companyData.t3[0]) || (hour == Number(companyData.t3[0]) && minute > Number(companyData.t3[1]))) same.normal = false; break
-							case 3: { if(hour < Number(companyData.t4[0]) || (hour == Number(companyData.t4[0]) && minute < Number(companyData.t4[1]))) same.normal = false
-								status = 'nowork' }; break
+							case 1: {
+								if(!companyData.t2) break
+								else { if(hour < Number(companyData.t2[0]) || (hour == Number(companyData.t2[0]) && minute < Number(companyData.t2[1]))) same.normal = false
+									status = 'nowork' }; break
+							}
+							case 2: {
+								if(!companyData.t3) break
+								else if(hour > Number(companyData.t3[0]) || (hour == Number(companyData.t3[0]) && minute > Number(companyData.t3[1]))) same.normal = false; break
+							}
+							case 3: {
+								if(!companyData.t4) break
+								else { if(hour < Number(companyData.t4[0]) || (hour == Number(companyData.t4[0]) && minute < Number(companyData.t4[1]))) same.normal = false
+									status = 'nowork' }; break
+							}
 							case 4: {
 								if(!companyData.t5) break
 								else if(hour > Number(companyData.t5[0]) || (hour == Number(companyData.t5[0]) && minute > Number(companyData.t5[1]))) same.normal = false; break
 							}
 							case 5: {
-								if(!companyData.t5) break
+								if(!companyData.t6) break
 								else { if(hour < Number(companyData.t6[0]) || (hour == Number(companyData.t6[0]) && minute < Number(companyData.t6[1]))) same.normal = false
 									status = 'nowork' }; break
 							}
@@ -256,7 +266,8 @@ router.delete('/tofree', (req, res)=> {
 
 router.get('/cos', (req, res)=> {
 	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
-	res.send({mm: mmmm})
+		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')
+	res.send({mm: mmmm, js: jsjsjs})
 })
 
 module.exports = router

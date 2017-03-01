@@ -13,7 +13,7 @@ function getQRCode(routers) {
 		.exec((err, company)=> {
 			if(err) return res.status(404).send(err)
 			if(!company) return res.status(404).send({error: 'Not found the company'})
-			var encrypt = makeHash(String(company._id))
+			var encrypt = String(company._id)
 			request.post(`${wxApis.qrcode}?access_token=${accessToken}`)
 			.send({
 				path: `pages/scan/scan?encrypt=${encrypt}`,

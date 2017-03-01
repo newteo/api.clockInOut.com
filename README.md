@@ -95,7 +95,7 @@
 
 ### 打卡
 ```js
-	POST    http://localhost:?/user/punch/:companyId?token=${token}
+	POST    http://localhost:?/user/punch/:companyId?token=${token}&encrypt=${encrypt}
 ```
 ```js
 {
