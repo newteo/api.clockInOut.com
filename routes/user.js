@@ -143,9 +143,15 @@ router.post('/punch/:id', (req, res)=> {
 							case 2: if(hour > Number(companyData.t3[0]) || (hour == Number(companyData.t3[0]) && minute > Number(companyData.t3[1]))) same.normal = false; break
 							case 3: { if(hour < Number(companyData.t4[0]) || (hour == Number(companyData.t4[0]) && minute < Number(companyData.t4[1]))) same.normal = false
 								status = 'nowork' }; break
-							case 4: if(hour > Number(companyData.t5[0]) || (hour == Number(companyData.t5[0]) && minute > Number(companyData.t5[1]))) same.normal = false; break
-							case 5: { if(hour < Number(companyData.t6[0]) || (hour == Number(companyData.t6[0]) && minute < Number(companyData.t6[1]))) same.normal = false
-								status = 'nowork' }; break
+							case 4: {
+								if(!companyData.t5) break
+								else if(hour > Number(companyData.t5[0]) || (hour == Number(companyData.t5[0]) && minute > Number(companyData.t5[1]))) same.normal = false; break
+							}
+							case 5: {
+								if(!companyData.t5) break
+								else { if(hour < Number(companyData.t6[0]) || (hour == Number(companyData.t6[0]) && minute < Number(companyData.t6[1]))) same.normal = false
+									status = 'nowork' }; break
+							}
 							default: { same.normal = false, status = 'nowork', createTF = false }
 						}
 						if(createTF) createSweep(userId, all, same._id, res)
@@ -248,5 +254,9 @@ router.delete('/tofree', (req, res)=> {
 	})
 })
 
+router.get('/cos', (req, res)=> {
+	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
+	res.send({mm: mmmm})
+})
 
 module.exports = router

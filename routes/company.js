@@ -40,7 +40,7 @@ function createCompany(uId, body, res) {
 		coordinate_longitude: body.longitude || null,
 		phone: body.phone || null,
 		commutingTime: body.commutingTime || [ '8:00', '12:00', '14:00', '18:00', null, null],
-		radius: body.radius || 100,
+		radius: body.radius || 500,
 		corporateMember: [ ],
 		mottos: [ ],
 		QRcodeUrl: null,
@@ -236,13 +236,18 @@ router.get('/staffs', (req, res)=> {
 		res.status(200).send({staffs: company.corporateMember})
 	})
 })
-function getStaffs(uId, record) {
-	Company.findOne({manager: uId})
-	.populate('corporateMember', 'wxName img status belongsTo remark punchCardRecords')
-	.exec((err, company)=> {
+function getStaffs(uId, cId, today) {
+	Record.find({owner: uId}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
+	.where('today').equals(today)
+	.populate('sweeps', 'place h_m_s')
+	.exec((err, staffRecords)=> {
 		if(err) return res.status(404).send(err)
-		if(!company) return res.status(404).send({error: 'Not found the company'})
-		res.status(200).send({staffs: company.corporateMember})
+		staffRecords.map((item)=> {
+			getStaffs(userId, item)
+			recordss.push(item)
+		})
+		console.log(recordss)
+		// res.status(200).send(staffRecords)
 	})
 }
 //获取单天成员打卡信息
@@ -250,22 +255,15 @@ router.get('/staffs/day', (req, res)=> {
 	const userId = req.decoded.userId
 		, today = req.query.today
 	var recordss = [ ]
-	Company.findOne({manager: userId})
+	Company.findOne({manager: uId})
+	.populate('corporateMember', 'wxName img status belongsTo remark punchCardRecords')
 	.exec((err, company)=> {
 		if(err) return res.status(404).send(err)
 		if(!company) return res.status(404).send({error: 'Not found the company'})
-		Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
-		.where('today').equals(today)
-		.populate('sweeps', 'place h_m_s')
-		.exec((err, staffRecords)=> {
-			if(err) return res.status(404).send(err)
-			staffRecords.map((item)=> {
-				getStaffs(userId, item)
-				recordss.push(item)
-			})
-			console.log(recordss)
-			// res.status(200).send(staffRecords)
+		company.corporateMember.map((item)=> {
+
 		})
+		res.status(200).send({staffs: recordss})
 	})
 })
 //改备注
