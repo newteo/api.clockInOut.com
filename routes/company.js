@@ -39,7 +39,7 @@ function createCompany(uId, body, res) {
 		coordinate_latitude: body.latitude || null,
 		coordinate_longitude: body.longitude || null,
 		phone: body.phone || null,
-		commutingTime: body.commutingTime || [ ],
+		commutingTime: body.commutingTime || [ '8:00', '12:00', '14:00', '18:00', null, null],
 		radius: body.radius || 100,
 		corporateMember: [ ],
 		mottos: [ ],
