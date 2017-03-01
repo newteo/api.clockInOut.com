@@ -122,11 +122,11 @@ router.post('/punch/:id', (req, res)=> {
 			companyData.t4 = company.commutingTime[3] || null
 			companyData.t5 = company.commutingTime[4] || null
 			companyData.t6 = company.commutingTime[5] || null
-			companyData.t2 = companyData.t2.split(':')
-			companyData.t3 = companyData.t3.split(':')
-			companyData.t4 = companyData.t4.split(':')
-			companyData.t5 = companyData.t5.split(':')
-			companyData.t6 = companyData.t6.split(':')
+			if(companyData.t2) companyData.t2 = companyData.t2.split(':')
+			if(companyData.t3) companyData.t3 = companyData.t3.split(':')
+			if(companyData.t4) companyData.t4 = companyData.t4.split(':')
+			if(companyData.t5) companyData.t5 = companyData.t5.split(':')
+			if(companyData.t6) companyData.t6 = companyData.t6.split(':')
 			if(sweepRange(companyData, x, y)) {
 				Record.findOne({owner: userId})
 				.where('today').equals(today)

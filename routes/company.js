@@ -236,21 +236,35 @@ router.get('/staffs', (req, res)=> {
 		res.status(200).send({staffs: company.corporateMember})
 	})
 })
+function getStaffs(uId, record) {
+	Company.findOne({manager: uId})
+	.populate('corporateMember', 'wxName img status belongsTo remark punchCardRecords')
+	.exec((err, company)=> {
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
+		res.status(200).send({staffs: company.corporateMember})
+	})
+}
 //获取单天成员打卡信息
 router.get('/staffs/day', (req, res)=> {
 	const userId = req.decoded.userId
 		, today = req.query.today
+	var recordss = [ ]
 	Company.findOne({manager: userId})
 	.exec((err, company)=> {
 		if(err) return res.status(404).send(err)
 		if(!company) return res.status(404).send({error: 'Not found the company'})
 		Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
 		.where('today').equals(today)
-		.populate('owner', 'wxName img status remark')
 		.populate('sweeps', 'place h_m_s')
 		.exec((err, staffRecords)=> {
 			if(err) return res.status(404).send(err)
-			res.status(200).send(staffRecords)
+			staffRecords.map((item)=> {
+				getStaffs(userId, item)
+				recordss.push(item)
+			})
+			console.log(recordss)
+			// res.status(200).send(staffRecords)
 		})
 	})
 })
