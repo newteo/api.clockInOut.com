@@ -164,11 +164,11 @@ router.post('/punch/', (req, res)=> {
 							}
 							default: { same.normal = false, status = 'nowork', createTF = false }
 						}
-						if(createTF) createSweep(userId, all, same._id, res)
+						createSweep(userId, all, same._id, res) //if(createTF) 
 						pushUpdate(userId, status, null)
 						same.save((err)=> {
 							if(err) return console.log(err)
-							if(!createTF) return res.status(403).send({error: '超过打卡次数限制(6次/天)，打卡无效'})
+							// if(!createTF) return res.status(403).send({error: '超过打卡次数限制(6次/天)，打卡无效'})
 						})
 					}
 				})
