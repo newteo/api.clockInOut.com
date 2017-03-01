@@ -7,7 +7,7 @@ function checkAdminToken(router) {
 		jwt.verify(token, ntSalt, (err, decoded) => {
 			if (!err) { 
 				next()
-			} else res.json(err)
+			} else res.status(401).send(err)
 		})
 	})
 }

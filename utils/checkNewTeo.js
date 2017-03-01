@@ -7,7 +7,7 @@ function checkNewTeo(router) {
 			, shaObj = new jsSHA('SHA-1', 'TEXT')
 		shaObj.update(raw)
 		if(shaObj.getHash('HEX') === encryptedNewteo) next()
-		else res.send({message: `You have't permission`})
+		else res.status(401).send({message: `You have't permission`})
 	})
 }
 

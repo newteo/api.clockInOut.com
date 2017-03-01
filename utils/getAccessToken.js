@@ -9,7 +9,7 @@ function getAccessToken(router) {
 	router.use('*', (req, res, next)=> {
 		request.get(`${wxApis.token}?grant_type=client_credential&appid=${appId}&secret=${appSecret}`)
 		.end((err, result)=> {
-			if(err) return res.send({code: 404, err})
+			if(err) return res.status(404).send(err)
 			var accessToken = JSON.parse(result.text).access_token
 			req.accessToken = accessToken
 			next()

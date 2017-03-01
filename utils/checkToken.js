@@ -8,7 +8,7 @@ function checkToken(router) {
 			if (!err) { 
 				req.decoded = decoded
 				next()
-			} else res.json(err)
+			} else res.status(401).send(err)
 		})
 	})
 }
