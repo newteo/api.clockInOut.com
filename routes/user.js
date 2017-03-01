@@ -211,14 +211,14 @@ router.post('/company', (req, res)=> {
 	.exec((err, exist)=> {
 		if(err) return res.status(404).send(err)
 		if(exist) {
-			return res.status(200).send({message: '已提交过申请'})
+			return res.status(400).send({message: '已提交过申请'})
 		} else {
 			ApplyCache.findOneAndUpdate({_id: companyId}, 
 			{$push: {applyMember: userId}}, 
 			{new: true}, 
 			(err, applycache)=> {
 				if(err) return res.status(404).send(err)
-				res.status(401).send({message: '申请已提交'})
+				res.status(200).send({message: '申请已提交'})
 			})
 		}
 	})
