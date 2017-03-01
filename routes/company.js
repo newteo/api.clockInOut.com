@@ -10,6 +10,16 @@ const router = require('express').Router()
 
 checkToken(router)
 
+function changeUser(members) {
+	members.map((item)=> {
+		User.update({_id: item}, 
+		{$set: {types: 'user', belongsTo: null, remark: null}}, 
+		{upsert: true}, 
+		(err, txt)=> {
+			if(err) return console.log(err)
+		})
+	})
+}
 function createApplyCache(cId) {
 	const apply = new ApplyCache({
 		_id: cId,
@@ -37,7 +47,7 @@ function createCompany(uId, body, res) {
 		remark: null
 	})
 	company.save((err)=> {
-		if(err) return res.send({code: 404, err})
+		if(err) return res.status(404).send(err)
 		User.update({_id: uId}, 
 		{$set: {
 			types: 'manager',
@@ -49,7 +59,7 @@ function createCompany(uId, body, res) {
 			// console.log('user changed')
 		})
 		createApplyCache(company._id)
-		res.send({code: 200, types: 'manager', company})
+		res.status(201).send({types: 'manager', company})
 	})
 }
 //创建公司信息
@@ -58,8 +68,8 @@ router.post('/new', (req, res)=> {
 	const logoUpload = upload('logos', 'logo')
 	Company.findOne({manager: userId})
 	.exec((err, exist)=> {
-		if(err) return res.send({code: 404, err})
-		if(exist) return res.send({code: 403, error: 'You had created one company'})
+		if(err) return res.status(404).send(err)
+		if(exist) return res.status(403).send({error: 'You had created one company'})
 		createCompany(userId, req.body, res)
 	})
 })
@@ -69,20 +79,20 @@ router.post('/logo', (req, res)=> {
 	const logoUpload = upload('logos', 'logo')
 	User.findOne({_id: userId})
 	.exec((err, user)=> {
-		if(err) return res.send({code: 404, err})
-		if(!user) return res.send({code: 404, error: 'Please to make sure for your information whether is deleted'})
-		if(user.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
+		if(err) return res.status(404).send(err)
+		if(!user) return res.status(404).send({error: 'Please to make sure for your information whether is deleted'})
+		if(user.types != 'manager') return res.status(404).send({error: 'You are not the manager'})
 		logoUpload(req, res, (err)=> {
-			if(err) return res.send({code: 404, err})
+			if(err) return res.status(404).send(err)
 			Company.findOne({_id: user.belongsTo})
 			.exec((err, company)=> {
-				if(err) return res.send({code: 404, err})
-				if(!company) return res.send({code: 404, error: 'Not found the company'})
+				if(err) return res.status(404).send(err)
+				if(!company) return res.status(404).send({error: 'Not found the company'})
 				if(company.logo) delFile(company.logo)
 				company.logo = host.clock + req.file.path
 				company.save((err)=> {
-					if(err) return res.send({code: 404, err})
-					res.send({code: 200, company})
+					if(err) return res.status(404).send(err)
+					res.status(201).send(company)
 				})
 			}) 
 		})
@@ -94,9 +104,9 @@ router.post('/information', (req, res)=> {
 	Company.findOne({manager: userId}, {__v: 0})
 	.populate('manager', 'wxName img types remark')
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company'})
-		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
+		if(company.manager.types != 'manager') return res.status(404).send({error: 'You are not the manager'})
 		if(req.body.name) company.name = req.body.name
 		if(req.body.address) company.address = req.body.address
 		if(req.body.phone) company.phone = req.body.phone
@@ -106,30 +116,34 @@ router.post('/information', (req, res)=> {
 		if(req.body.radius) company.radius = req.body.radius
 		if(req.body.remark) company.remark = req.body.remark
 		company.save((err)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, company})
+			if(err) return res.status(404).send(err)
+			res.status(201).send(company)
 		})
 	})
 })
 //删除
 router.delete('/now', (req, res)=> {
 	const userId = req.decoded.userId
+	var members = []
 	Company.findOne({manager: userId}, {__v: 0})
 	.populate('manager', 'wxName img types remark')
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company'})
-		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
+		if(company.manager.types != 'manager') return res.status(404).send({error: 'You are not the manager'})
 		if(company.logo) delFile(company.logo)
 		if(company.QRcodeUrl) delFile(company.QRcodeUrl)
-		// company.corporateMember[]处理
+		if(company.corporateMember) {
+			members = company.corporateMember
+			changeUser(members)
+		}
 		ApplyCache.remove({_id: company._id})
 		.exec((err)=> {
 			if(err) return console.log(err)
 		})
 		Company.remove({_id: company._id})
 		.exec((err)=> {
-			if(err) return res.send({code: 404, err})
+			if(err) return res.status(404).send(err)
 			User.update({_id: userId}, 
 			{$set: { types: 'user', belongsTo: null }}, 
 			{upsert: true}, 
@@ -137,7 +151,7 @@ router.delete('/now', (req, res)=> {
 				if(err) return console.log(err)
 				// console.log('user changed')
 			})
-			res.send({code: 200, message: 'company deleted success'})
+			res.status(200).send({message: 'company deleted success'})
 		})
 	})
 })
@@ -147,14 +161,14 @@ router.get('/applylist', (req, res)=> {
 	Company.findOne({manager: userId})
 	.populate('manager', 'wxName img types remark')
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company'})
-		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
+		if(company.manager.types != 'manager') return res.status(404).send({error: 'You are not the manager'})
 		ApplyCache.findOne({_id: company._id}, {__v: 0, _id: 0})
 		.populate('applyMember', 'wxName img types belongsTo')
 		.exec((err, applycache)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, applycache})
+			if(err) return res.status(404).send(err)
+			res.status(200).send(applycache)
 		})
 	})
 })
@@ -165,17 +179,17 @@ router.post('/applylist/:id', (req, res)=> {
 	if(req.body.validation == 'pass') {
 		Company.findOne({manager: userId})
 		.exec((err, company)=> {
-			if(err) return res.send({code: 404, err})
-			if(!company) return res.send({code: 404, error: 'Not found the company'})
+			if(err) return res.status(404).send(err)
+			if(!company) return res.status(404).send({error: 'Not found the company'})
 			ApplyCache.findOne({_id: company._id})
 			.where('applyMember').in([applyId])
 			.exec((err, applycache)=> {
-				if(err) return res.send({code: 404, err})
-				if(!applycache) return res.send({code: 204, message: 'Id is not in the list'})
+				if(err) return res.status(404).send(err)
+				if(!applycache) return res.status(404).send({message: 'Id is not in the list'})
 				applycache.applyMember.pull(applyId)
 				company.corporateMember.push(applyId)
 				applycache.save((err)=> {
-					if(err) return res.status(404).send(err)
+					if(err) return res.status(400).send(err)
 					company.save((err)=> {
 						if(err) return res.status(400).send(err)
 						User.update({_id: applyId}, 
