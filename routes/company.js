@@ -122,6 +122,7 @@ router.delete('/now', (req, res)=> {
 		if(company.manager.types != 'manager') return res.send({code: 404, error: 'You are not the manager'})
 		if(company.logo) delFile(company.logo)
 		if(company.QRcodeUrl) delFile(company.QRcodeUrl)
+		// company.corporateMember[]处理
 		ApplyCache.remove({_id: company._id})
 		.exec((err)=> {
 			if(err) return console.log(err)
@@ -174,9 +175,9 @@ router.post('/applylist/:id', (req, res)=> {
 				applycache.applyMember.pull(applyId)
 				company.corporateMember.push(applyId)
 				applycache.save((err)=> {
-					if(err) return res.send({code: 404, err})
+					if(err) return res.status(404).send(err)
 					company.save((err)=> {
-						if(err) return res.send({code: 404, err})
+						if(err) return res.status(400).send(err)
 						User.update({_id: applyId}, 
 						{$set: { types: 'staff', belongsTo: company._id }}, 
 						{upsert: true}, 
@@ -184,7 +185,7 @@ router.post('/applylist/:id', (req, res)=> {
 							if(err) return console.log(err)
 							// console.log('user changed')
 						})
-						res.send({code: 200, message: 'add success'})
+						res.status(201).send({message: 'add success'})
 					})
 				})
 			})
@@ -192,22 +193,22 @@ router.post('/applylist/:id', (req, res)=> {
 	} else if(req.body.validation == 'nopass') {
 		Company.findOne({manager: userId})
 		.exec((err, company)=> {
-			if(err) return res.send({code: 404, err})
-			if(!company) return res.send({code: 404, error: 'Not found the company'})
+			if(err) return res.status(404).send(err)
+			if(!company) return res.status(404).send({error: 'Not found the company'})
 			ApplyCache.findOne({_id: company._id})
 			.where('applyMember').in([applyId])
 			.exec((err, applycache)=> {
-				if(err) return res.send({code: 404, err})
-				if(!applycache) return res.send({code: 204, message: 'Id is not in the list'})
+				if(err) return res.status(404).send(err)
+				if(!applycache) return res.status(404).send({message: 'Id is not in the list'})
 				applycache.applyMember.pull(applyId)
 				applycache.save((err)=> {
-					if(err) return res.send({code: 404, err})
-					res.send({code: 200, message: 'refuse success'})
+					if(err) return res.status(400).send(err)
+					res.status(201).send({message: 'refuse success'})
 				})
 			})
 		})
 	} else {
-		res.send({code: 404, error: 'validation is pass or nopass'})
+		res.status(400).send({error: 'validation is pass or nopass'})
 	}
 })
 //获取成员列表
@@ -216,9 +217,9 @@ router.get('/staffs', (req, res)=> {
 	Company.findOne({manager: userId})
 	.populate('corporateMember', 'wxName img status belongsTo remark punchCardRecords')
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company'})
-		res.send({code: 200, staffs: company.corporateMember})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
+		res.status(200).send({staffs: company.corporateMember})
 	})
 })
 //获取单天成员打卡信息
@@ -227,15 +228,15 @@ router.get('/staffs/day', (req, res)=> {
 		, today = req.query.today
 	Company.findOne({manager: userId})
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
 		Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
 		.where('today').equals(today)
 		.populate('owner', 'wxName img status remark')
 		.populate('sweeps', 'place h_m_s')
 		.exec((err, staffRecords)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, staffRecords})
+			if(err) return res.status(404).send(err)
+			res.status(200).send(staffRecords)
 		})
 	})
 })
@@ -246,14 +247,14 @@ router.post('/staffs/:id/remark', (req, res)=> {
 	Company.findOne({manager: userId})
 	.where('corporateMember').in([staffId])
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company or staff Id'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company or staff Id'})
 		User.findOneAndUpdate({_id: staffId}, 
 		{$set: {remark: req.body.remark}}, 
 		{new: true},	
 		(err, user)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, user})
+			if(err) return res.status(400).send(err)
+			res.status(201).send(user)
 		})
 	})
 })
@@ -267,15 +268,15 @@ router.get('/staffs/:id/:year/:month', (req, res)=> {
 	Company.findOne({manager: userId})
 	.where('corporateMember').in([staffId])
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company or staff Id'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company or staff Id'})
 		Record.find({owner: staffId})
 		.where('today').regex(re)
 		.populate('owner', 'wxName img remark')
 		.populate('sweeps', 'place h_m_s')
 		.exec((err, records)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, records})
+			if(err) return res.status(404).send(err)
+			res.status(200).send(records)
 		})
 	})
 })
@@ -290,15 +291,15 @@ router.get('/staffs/:id/:year/:month/:day', (req, res)=> {
 	Company.findOne({manager: userId})
 	.where('corporateMember').in([staffId])
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company or staff Id'})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company or staff Id'})
 		Record.find({owner: staffId})
 		.where('today').regex(re)
 		.populate('owner', 'wxName img remark')
 		.populate('sweeps', 'place h_m_s')
 		.exec((err, records)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, records})
+			if(err) return res.status(404).send(err)
+			res.status(200).send(records)
 		})
 	})
 })
