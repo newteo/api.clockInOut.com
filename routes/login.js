@@ -5,19 +5,19 @@ const router = require('express').Router()
 router.post('/', (req, res)=> {
 	Admin.findOne({adminName: req.body.adminName})
 	.exec((err, keeper)=> {
-		if(err) return res.send({code: 404, err})
-		if(!keeper) return res.send({error: 'Not found the admin'})
+		if(err) return res.status(404).send(err)
+		if(!keeper) return res.status(404).send({error: 'Not found the admin'})
 		if(keeper.password == req.body.password) {
 			jwt.sign(
 				{},
 				'guojing',
 				{expiresIn: '1d'}, 
 				(err, token) => {
-					if(err) return res.send({code: 404, err})
-					res.send({code: 200, token: token})
+					if(err) return res.status(404).send(err)
+					res.status(200).send({token: token})
 				}
 			)
-		} else res.send({code: 401, error: 'Password error'})
+		} else res.status(401).send({error: 'Password error'})
 	})
 })
 

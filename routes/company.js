@@ -151,7 +151,7 @@ router.delete('/now', (req, res)=> {
 				if(err) return console.log(err)
 				// console.log('user changed')
 			})
-			res.status(200).send({message: 'company deleted success'})
+			res.status(200).send({types: 'user', message: 'company deleted success'})
 		})
 	})
 })

@@ -16,9 +16,9 @@ function setinfo(wxInfo, res) {
 			'newteo.com', 
 			{expiresIn: '7d'}, 
 			(err, token)=> {
-				if(err) return res.send({code: 404, err})
+				if(err) return res.status(404).send(err)
 				// console.log('ok')
-				res.send({code: 200, token: token})
+				res.status(201).send({token: token})
 			})
 		} else {
 			const info = new Older({
@@ -28,13 +28,13 @@ function setinfo(wxInfo, res) {
 				memoes: []
 			})
 			info.save((err)=> {
-				if(err) return res.send({code: 404, err})
+				if(err) return res.status(404).send(err)
 				jwt.sign({userId: info._id}, 
 				'newteo.com', 
 				{expiresIn: '7d'}, 
 				(err, token)=> {
-					if(err) return res.send({code: 404, err})
-					res.send({code: 200, token: token})
+					if(err) return res.status(404).send(err)
+					res.status(201).send({token: token})
 				})
 			})
 		}
@@ -58,7 +58,7 @@ router.get('/session', (req, res)=> {
 			delete wxInfo.watermark    //(！！！)
 			// console.log(wxInfo)
 			setinfo(wxInfo, res)
-		} else res.send(result.text)
+		} else res.status(404).send(result.text)
 	})
 })
 

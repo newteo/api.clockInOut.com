@@ -28,7 +28,7 @@ router.get('/get', (req, res)=> {
 			// console.log('+')
 		})
 	)
-	res.send({QRCodeUrl: host.clock + filepath})
+	res.status(200).send({QRCodeUrl: host.clock + filepath})
 })
 
 module.exports = router

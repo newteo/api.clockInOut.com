@@ -38,7 +38,7 @@ function createSweep(uId, all, rId, res) {
 		h_m_s: all.time
 	})
 	sweepp.save((err)=> {
-		if(err) return res.send({code: 404, err})
+		if(err) return res.status(404).send(err)
 		Record.update({_id: rId}, 
 		{$push: {sweeps: sweepp._id}}, 
 		(err, txt)=> {
@@ -48,8 +48,8 @@ function createSweep(uId, all, rId, res) {
 		Sweep.findOne({_id: sweepp._id}, {__v:0, lng:0, lat:0, })
 		.populate('owner', 'updatedTime wxName img employeeID realName status')
 		.exec((err, sweep)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, sweep})
+			if(err) return res.status(404).send(err)
+			res.status(201).send(sweep)
 		})
 	})
 }
@@ -64,7 +64,7 @@ function createRecord(t1, uId, all, res) {
 		sweeps: []
 	})
 	record.save((err)=> {
-		if(err) return res.send({code: 404, err})
+		if(err) return res.status(404).send(err)
 		pushUpdate(uId, 'work', record._id)
 		createSweep(uId, all, record._id, res)
 	})
@@ -98,7 +98,7 @@ router.post('/punch/:id', (req, res)=> {
 		, time = `${hour}:${minute}:${second}`
 	request.get(`https://apis.map.qq.com/ws/geocoder/v1/?location=${x},${y}&coord_type=3&key=${key}`)
 	.end((err, qqtxt)=> {
-		if(err) return res.send({code: 404, err})
+		if(err) return res.status(404).send(err)
 		if(JSON.parse(qqtxt.text).result.formatted_addresses) {
 			all.place = JSON.parse(qqtxt.text).result.formatted_addresses.recommend
 		} else all.place = JSON.parse(qqtxt.text).result.address
@@ -111,8 +111,8 @@ router.post('/punch/:id', (req, res)=> {
 		all.companyId = encryptId
 		Company.findOne({_id: encryptId})
 		.exec((err, company)=> {
-			if(err) return res.send({code: 404, err})
-			if(!company) return res.send({code: 404, error: 'Not found the company'})
+			if(err) return res.status(404).send(err)
+			if(!company) return res.status(404).send({error: 'Not found the company'})
 			companyData.Lat = company.coordinate_latitude
 			companyData.Lng = company.coordinate_longitude
 			companyData.R = company.radius
@@ -131,7 +131,7 @@ router.post('/punch/:id', (req, res)=> {
 				Record.findOne({owner: userId})
 				.where('today').equals(today)
 				.exec((err, same)=> {
-					if(err) return res.send({code: 404, err})
+					if(err) return res.status(404).send(err)
 					if(!same) {
 						createRecord(companyData.t1, userId, all, res)
 					} else {
@@ -152,11 +152,11 @@ router.post('/punch/:id', (req, res)=> {
 						pushUpdate(userId, status, null)
 						same.save((err)=> {
 							if(err) return console.log(err)
-							if(!createTF) return res.send({code: 404, error: '超过打卡次数限制(6次/天)，打卡无效'})
+							if(!createTF) return res.status(403).send({error: '超过打卡次数限制(6次/天)，打卡无效'})
 						})
 					}
 				})
-			} else res.send({code: 401, place: all.place, error: '超出范围'})
+			} else res.status(403).send({place: all.place, error: '超出范围'})
 		})
 	})
 })
@@ -167,8 +167,8 @@ router.get('/info', (req, res)=> {
 	User.findOne({_id: userId}, {__v:0})
 	.populate('belongsTo')
 	.exec((err, user)=> {
-		if(err) return res.send({code: 404, err})
-		res.send({code: 200, user})
+		if(err) return res.status(404).send(err)
+		res.status(200).send(user)
 	})
 })
 
@@ -180,16 +180,16 @@ router.get('/records', (req, res)=> {
 	.populate('sweeps', 'place h_m_s createdTime')
 	.sort({createdTime: -1})
 	.exec((err, records)=> {
-		if(err) return res.send({code: 404, err})
-		res.send({code: 200, records})
+		if(err) return res.status(404).send(err)
+		res.status(200).send(records)
 	})
 })
 //查看所有公司列表
 router.get('/companies', (req, res)=> {
 	Company.find({}, {name:1, logo:1, address:1})
 	.exec((err, companies)=> {
-		if(err) return res.send({code: 404, err})
-		res.send({code: 200, companies})
+		if(err) return res.status(404).send(err)
+		res.status(200).send(companies)
 	})
 })
 //单公司详情
@@ -197,9 +197,9 @@ router.get('/company/:id', (req, res)=> {
 	const companyId = req.params.id
 	Company.findOne({_id: companyId}, {__v:0, coordinate_latitude:0, coordinate_longitude:0})
 	.exec((err, company)=> {
-		if(err) return res.send({code: 404, err})
-		if(!company) return res.send({code: 404, error: 'Not found the company'})
-		res.send({code: 200, company})
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company'})
+		res.status(200).send(company)
 	})
 })
 //申请加入公司
@@ -209,16 +209,16 @@ router.post('/company', (req, res)=> {
 	ApplyCache.findOne({_id: companyId})
 	.where('applyMember').in([userId])
 	.exec((err, exist)=> {
-		if(err) return res.send({code: 404, err})
+		if(err) return res.status(404).send(err)
 		if(exist) {
-			return res.send({code: 202, message: '已提交过申请'})
+			return res.status(200).send({message: '已提交过申请'})
 		} else {
 			ApplyCache.findOneAndUpdate({_id: companyId}, 
 			{$push: {applyMember: userId}}, 
 			{new: true}, 
 			(err, applycache)=> {
-				if(err) return res.send({code: 404, err})
-				res.send({code: 200, message: '申请已提交'})
+				if(err) return res.status(404).send(err)
+				res.status(401).send({message: '申请已提交'})
 			})
 		}
 	})
@@ -228,8 +228,8 @@ router.delete('/tofree', (req, res)=> {
 	const userId = req.decoded.userId
 	User.findOne({_id: userId})
 	.exec((err, user)=> {
-		if(err) return res.send({code: 404, err})
-		if(!user) return res.send({code: 404, error: 'Your info has been deleted'})
+		if(err) return res.status(404).send(err)
+		if(!user) return res.status(404).send({error: 'Your info has been deleted'})
 		if(user.belongsTo) {
 			Company.update({_id: user.belongsTo}, 
 			{$pull: {corporateMember: userId}}, 
@@ -242,8 +242,8 @@ router.delete('/tofree', (req, res)=> {
 		user.belongsTo = null
 		user.remark = null
 		user.save((err)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, user})
+			if(err) return res.status(404).send(err)
+			res.status(200).send(user)
 		})
 	})
 })

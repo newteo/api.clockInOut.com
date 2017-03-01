@@ -364,7 +364,7 @@
 返回=>  打卡记录
 
 
-## 备忘
+<!-- ## 备忘
 ### 授权登录
 ```js
   GET    http://localhost:?/newteo/session?code=${code}&iv=${iv}&encryptedData=${encryptedData}&newteo=${newteo}
@@ -409,4 +409,4 @@
 ### 删除备忘
 ```js
   DELETE    http://localhost:?/newteomemo/one/:memoId?token=${token}
-```
+``` -->

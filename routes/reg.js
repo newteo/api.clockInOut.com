@@ -11,8 +11,8 @@ router.post('/', (req, res)=> {
 			password: req.body.password
 		})
 		keeper.save((err)=> {
-			if(err) return res.send({code: 404, err})
-			res.send({code: 200, keeper})
+			if(err) return res.status(404).send(err)
+			res.status(200).send(keeper)
 		})
 	}
 })

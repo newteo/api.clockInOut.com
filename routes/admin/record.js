@@ -5,7 +5,7 @@ const router = require('express').Router()
 router.delete('/all', (req, res)=> {
 	Record.remove({})
 	.exec((err)=> {
-		if(err) return res.send({code: 404, err})
+		if(err) return res.status(404).send(err)
 		User.find()
 		.exec((err, users)=> {
 			if(err) return console.log(err)
@@ -16,7 +16,7 @@ router.delete('/all', (req, res)=> {
 				})
 			})
 		})
-		res.send({code: 200, message: 'All record delete success'})
+		res.status(200).send({message: 'All record delete success'})
 	})
 })
 

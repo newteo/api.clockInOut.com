@@ -17,9 +17,9 @@ function setinfo(wxInfo, res) {
 			salt, 
 			{expiresIn: '7d'}, 
 			(err, token)=> {
-				if(err) return res.send({code: 404, err})
+				if(err) return res.status(404).send(err)
 				// console.log('ok')
-				res.send({code: 200, types: same.types, status: same.status, token: token})
+				res.status(201).send({types: same.types, status: same.status, token: token})
 			})
 		} else {
 			const info = new User({
@@ -35,13 +35,13 @@ function setinfo(wxInfo, res) {
 				remark: null,
 			})
 			info.save((err)=> {
-				if(err) return res.send({code: 404, err})
+				if(err) return res.status(404).send(err)
 				jwt.sign({userId: info._id}, 
 				salt, 
 				{expiresIn: '7d'}, 
 				(err, token)=> {
-					if(err) return res.send({code: 404, err})
-					res.send({code: 200, types: info.types, status: info.status, token: token})
+					if(err) return res.status(404).send(err)
+					res.status(201).send({types: info.types, status: info.status, token: token})
 				})
 			})
 		}
@@ -65,7 +65,7 @@ router.get('/', (req, res)=> {
 			delete wxInfo.watermark    //(！！！)
 			// console.log(wxInfo)
 			setinfo(wxInfo, res)
-		} else res.send(result.text)
+		} else res.status(404).send(result.text)
 	})
 })
 
