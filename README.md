@@ -203,6 +203,14 @@
   ]
 }
 ```
+### 查看个人天打卡记录
+```js
+  GET    http://localhost:?/user/record/:Year/:Month/:Day?token=${token}
+```
+### 查看个人月打卡记录
+```js
+  GET    http://localhost:?/user/record/:Year/:Month?token=${token}
+```
 
 
 

@@ -111,9 +111,10 @@ router.post('/punch/', (req, res)=> {
 		all.time = time
 		all.companyId = encryptId
 		Company.findOne({_id: encryptId})
+		.where('corporateMember').in([userId])
 		.exec((err, company)=> {
 			if(err) return res.status(404).send(err)
-			if(!company) return res.status(404).send({error: 'Not found the company'})
+			if(!company) return res.status(404).send({error: 'Not found the company or you are not staff in this company'})
 			companyData.Lat = company.coordinate_latitude
 			companyData.Lng = company.coordinate_longitude
 			companyData.R = company.radius
@@ -268,6 +269,37 @@ router.get('/cos', (req, res)=> {
 	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
 		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')
 	res.send({mm: mmmm, js: jsjsjs})
+})
+//tian
+router.get('/record/:year/:month/:day', (req, res)=> {
+	const userId = req.decoded.userId
+		, yy = req.params.year
+		, mm = req.params.month
+		, dd = req.params.day
+		, re = new RegExp(yy + '-' + mm + '-' + dd,'i')
+	Record.find({owner: userId}, {__v:0})
+	.where('today').regex(re)
+	.populate('owner', 'wxName img remark')
+	.populate('sweeps', 'place h_m_s')
+	.exec((err, records)=> {
+		if(err) return res.status(404).send(err)
+		res.status(200).send(records)
+	})
+})
+//yue
+router.get('/record/:year/:month', (req, res)=> {
+	const userId = req.decoded.userId
+		, yy = req.params.year
+		, mm = req.params.month
+		, re = new RegExp(yy + '-' + mm,'i')
+	Record.find({owner: userId}, {__v:0})
+	.where('today').regex(re)
+	.populate('owner', 'wxName img remark')
+	.populate('sweeps', 'place h_m_s')
+	.exec((err, records)=> {
+		if(err) return res.status(404).send(err)
+		res.status(200).send(records)
+	})
 })
 
 module.exports = router
