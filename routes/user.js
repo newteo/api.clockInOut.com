@@ -288,6 +288,25 @@ router.get('/record', (req, res)=> {
 	})
 })
 
+router.get('/record/time', (req, res)=> {
+	const userId = req.decoded.userId
+	var start = new Date(req.query.start.replace(/\-/g, ','))
+		, end = new Date(req.query.end.replace(/\-/g, ','))
+	User.findOne({_id: userId})
+	.exec((err, user)=> {
+		if(err) return res.status(404).send(err)
+		Record.find({owner: userId}, {__v:0})
+		.where('companyId').equals(user.belongsTo)
+		.where('createdTime').gte(start).lt(end)
+		.populate('owner', 'wxName img remark')
+		.populate('sweeps', 'place h_m_s')
+		.exec((err, records)=> {
+			if(err) return res.status(404).send(err)
+			res.status(200).send(records)
+		})
+	})
+})
+
 // router.get('/cos', (req, res)=> {
 // 	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
 // 		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')

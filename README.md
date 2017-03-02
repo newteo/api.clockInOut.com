@@ -207,6 +207,13 @@
 ```js
   GET    http://localhost:?/user/record?token=${token}&today=${today}
 ```
+返回=>  打卡记录    
+
+### 查看时间段打卡记录
+```js
+  GET    http://localhost:?/user/record/time?token=${token}&start=${start}&end=${end}
+```
+返回=>  打卡记录    
 
 
 
@@ -296,7 +303,7 @@
 ```
 ```js
 {
-  today: ${today}        require!//哪一天(String)  eg: 2017-2-14
+  today: ${today}        require!//哪一天(String)  eg: 2017-03-03
 }
 ```
 返回=>  
@@ -308,7 +315,7 @@
       "_id": "xxx",
       "owner": {...},
       "normal": false,
-      "today": "2017-2-14",
+      "today": "2017-03-03",
       "sweeps": [
         {
           "_id": "xxx",
@@ -326,7 +333,7 @@
       "_id": "xxx",
       "owner": {...},
       "normal": false,
-      "today": "2017-2-14",
+      "today": "2017-03-03",
       "sweeps": [
         {
           "_id": "xxx",
@@ -359,7 +366,15 @@
 ```js
   GET    http://localhost:?/company/staffs/:staffId/?token=${token}&today=${today}
 ```
-返回=>  打卡记录    
+// 格式: today = 2017-03-03    
+返回=>  员工打卡记录    
+
+### 获取某员工时间段打卡记录
+```js
+  GET    http://localhost:?/company/staffs/:staffId/time?token=${token}&start=${start}&end=${end}
+```
+// 格式: start/end = 2017-03-03    
+返回=>  员工打卡记录   
 
 
 

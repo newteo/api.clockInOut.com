@@ -308,5 +308,27 @@ router.get('/staffs/:id/', (req, res)=> {
 		})
 	})
 })
+//时间段
+router.get('/staffs/:id/time', (req, res)=> {
+	const userId = req.decoded.userId
+		, staffId = req.params.id
+	var start = new Date(req.query.start.replace(/\-/g, ','))
+		, end = new Date(req.query.end.replace(/\-/g, ','))
+	Company.findOne({manager: userId})
+	.where('corporateMember').in([staffId])
+	.exec((err, company)=> {
+		if(err) return res.status(404).send(err)
+		if(!company) return res.status(404).send({error: 'Not found the company or staff Id'})
+		Record.find({owner: staffId},  {__v:0})
+		.where('companyId').equals(company._id)
+		.where('createdTime').gte(start).lt(end)
+		.populate('owner', 'wxName img remark')
+		.populate('sweeps', 'place h_m_s')
+		.exec((err, records)=> {
+			if(err) return res.status(404).send(err)
+			res.status(200).send(records)
+		})
+	})
+})
 
 module.exports = router
