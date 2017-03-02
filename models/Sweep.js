@@ -11,6 +11,10 @@ const sweepSchema = new Schema({
 	lat: { type: Number },       //纬度
 	place: { type: String },        //地点
 	h_m_s: { type: String },        //时分秒
+	conditions: {
+		type: String,
+		enum: ['OK', 'LATE', 'EARLY']
+	},
 	createdTime: {
 		type: Date, 
 		default: Date.now

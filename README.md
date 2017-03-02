@@ -173,31 +173,37 @@
     {
       "place": "xxx",
       "h_m_s": "xxx",
+      "conditions": "xxx",        //打卡状态['OK', 'LATE', 'EARLY']
       "createdTime": "xxx"
     },
     {
       "place": "xxx",
       "h_m_s": "xxx",
+      "conditions": "xxx",
       "createdTime": "xxx"
     },
     {
       "place": "xxx",
       "h_m_s": "xxx",
+      "conditions": "xxx",
       "createdTime": "xxx"
     },
     {
       "place": "xxx",
       "h_m_s": "xxx",
+      "conditions": "xxx",
       "createdTime": "xxx"
     },
     {
       "place": "xxx",
       "h_m_s": "xxx",
+      "conditions": "xxx",
       "createdTime": "xxx"
     },
     {
       "place": "xxx",
       "h_m_s": "xxx",
+      "conditions": "xxx",
       "createdTime": "xxx"
     }
   ]

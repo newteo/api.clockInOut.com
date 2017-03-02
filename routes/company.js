@@ -248,7 +248,7 @@ router.get('/staffs/day', (req, res)=> {
 		if(!company) return res.status(404).send({error: 'Not found the company'})
 		Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
 		.where('today').equals(today)
-		.populate('sweeps', 'place h_m_s')
+		.populate('sweeps', 'place h_m_s conditions')
 		.exec((err, records)=> {
 			if(err) return res.status(404).send(err)
 			company.corporateMember.map((staff)=> {
@@ -301,7 +301,7 @@ router.get('/staffs/:id/', (req, res)=> {
 		.where('companyId').equals(company._id)
 		.where('today').regex(re)
 		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s')
+		.populate('sweeps', 'place h_m_s conditions')
 		.exec((err, records)=> {
 			if(err) return res.status(404).send(err)
 			res.status(200).send(records)
@@ -323,7 +323,7 @@ router.get('/staffs/:id/time', (req, res)=> {
 		.where('companyId').equals(company._id)
 		.where('createdTime').gte(start).lt(end)
 		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s')
+		.populate('sweeps', 'place h_m_s conditions')
 		.exec((err, records)=> {
 			if(err) return res.status(404).send(err)
 			res.status(200).send(records)

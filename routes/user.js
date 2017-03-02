@@ -36,7 +36,8 @@ function createSweep(uId, all, rId, res) {
 		lng: all.lng,
 		lat: all.lat,
 		place: all.place,
-		h_m_s: all.time
+		h_m_s: all.time,
+		conditions: all.conditions
 	})
 	sweepp.save((err)=> {
 		if(err) return res.status(404).send(err)
@@ -56,7 +57,7 @@ function createSweep(uId, all, rId, res) {
 }
 function createRecord(t1, uId, all, res) {
 	t1 = t1.split(':')
-	if(all.hour > Number(t1[0]) || (all.hour == Number(t1[0]) && all.minute > Number(t1[1]))) all.normal = false
+	if(all.hour > Number(t1[0]) || (all.hour == Number(t1[0]) && all.minute > Number(t1[1]))) { all.normal = false; all.conditions = 'LATE' }
 	const record = new Record({
 		owner: uId,
 		companyId: all.companyId,
@@ -80,7 +81,7 @@ router.post('/punch/', (req, res)=> {
 	const userId = req.decoded.userId
 		, encryptId = req.query.encrypt
 	var all = {
-		hour: null, minute: null, companyId: null, normal: true,
+		hour: null, minute: null, companyId: null, normal: true, conditions: 'OK', 
 		lng: null, lat: null, place: null, today: null, time: null
 	} 
 	var companyData = {
@@ -146,25 +147,25 @@ router.post('/punch/', (req, res)=> {
 						switch (same.sweeps.length) {
 							case 1: {
 								if(!companyData.t2) break
-								else { if(hour < Number(companyData.t2[0]) || (hour == Number(companyData.t2[0]) && minute < Number(companyData.t2[1]))) same.normal = false
+								else { if(hour < Number(companyData.t2[0]) || (hour == Number(companyData.t2[0]) && minute < Number(companyData.t2[1]))) { same.normal = false; all.conditions = 'EARLY' }
 									status = 'nowork' }; break
 							}
 							case 2: {
 								if(!companyData.t3) break
-								else if(hour > Number(companyData.t3[0]) || (hour == Number(companyData.t3[0]) && minute > Number(companyData.t3[1]))) same.normal = false; break
+								else if(hour > Number(companyData.t3[0]) || (hour == Number(companyData.t3[0]) && minute > Number(companyData.t3[1]))) { same.normal = false; all.conditions = 'LATE' }; break
 							}
 							case 3: {
 								if(!companyData.t4) break
-								else { if(hour < Number(companyData.t4[0]) || (hour == Number(companyData.t4[0]) && minute < Number(companyData.t4[1]))) same.normal = false
+								else { if(hour < Number(companyData.t4[0]) || (hour == Number(companyData.t4[0]) && minute < Number(companyData.t4[1]))) { same.normal = false; all.conditions = 'EARLY' }
 									status = 'nowork' }; break
 							}
 							case 4: {
 								if(!companyData.t5) break
-								else if(hour > Number(companyData.t5[0]) || (hour == Number(companyData.t5[0]) && minute > Number(companyData.t5[1]))) same.normal = false; break
+								else if(hour > Number(companyData.t5[0]) || (hour == Number(companyData.t5[0]) && minute > Number(companyData.t5[1]))) { same.normal = false; all.conditions = 'LATE' }; break
 							}
 							case 5: {
 								if(!companyData.t6) break
-								else { if(hour < Number(companyData.t6[0]) || (hour == Number(companyData.t6[0]) && minute < Number(companyData.t6[1]))) same.normal = false
+								else { if(hour < Number(companyData.t6[0]) || (hour == Number(companyData.t6[0]) && minute < Number(companyData.t6[1]))) { same.normal = false; all.conditions = 'EARLY' }
 									status = 'nowork' }; break
 							}
 							default: { same.normal = false, status = 'nowork', createTF = false }
@@ -198,7 +199,7 @@ router.get('/records', (req, res)=> {
 	const userId = req.decoded.userId
 	Record.find({owner: userId}, {__v:0})
 	.populate('owner', 'wxName img employeeID realName status')
-	.populate('sweeps', 'place h_m_s createdTime')
+	.populate('sweeps', 'place h_m_s conditions createdTime')
 	.sort({createdTime: -1})
 	.exec((err, records)=> {
 		if(err) return res.status(404).send(err)
@@ -280,7 +281,7 @@ router.get('/record', (req, res)=> {
 		.where('companyId').equals(user.belongsTo)
 		.where('today').regex(re)
 		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s')
+		.populate('sweeps', 'place h_m_s conditions')
 		.exec((err, records)=> {
 			if(err) return res.status(404).send(err)
 			res.status(200).send(records)
@@ -299,7 +300,7 @@ router.get('/record/time', (req, res)=> {
 		.where('companyId').equals(user.belongsTo)
 		.where('createdTime').gte(start).lt(end)
 		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s')
+		.populate('sweeps', 'place h_m_s conditions')
 		.exec((err, records)=> {
 			if(err) return res.status(404).send(err)
 			res.status(200).send(records)
