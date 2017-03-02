@@ -355,17 +355,12 @@
 ```
 返回=>  员工信息    
 
-### 获取某员工某月打卡记录
+### 获取某员工today打卡记录
 ```js
-  GET    http://localhost:?/company/staffs/:staffId/:Year/:Month?token=${token}
+  GET    http://localhost:?/company/staffs/:staffId/?token=${token}&today=${today}
 ```
 返回=>  打卡记录    
 
-### 获取某员工某天打卡记录
-```js
-  GET    http://localhost:?/company/staffs/:staffId/:Year/:Month/:Day?token=${token}
-```
-返回=>  打卡记录
 
 
 <!-- ## 备忘

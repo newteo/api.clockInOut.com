@@ -250,7 +250,7 @@ router.get('/staffs/day', (req, res)=> {
 		.where('today').equals(today)
 		.populate('sweeps', 'place h_m_s')
 		.exec((err, records)=> {
-			if(err) return res.send(err)
+			if(err) return res.status(404).send(err)
 			company.corporateMember.map((staff)=> {
 				var card = records.map((item)=> { 
 					if(String(item.owner) == String(staff._id)) return item
@@ -286,42 +286,19 @@ router.post('/staffs/:id/remark', (req, res)=> {
 		})
 	})
 })
-// /人/月
-router.get('/staffs/:id/:year/:month', (req, res)=> {
+// 
+router.get('/staffs/:id/', (req, res)=> {
 	const userId = req.decoded.userId
 		, staffId = req.params.id
-		, yy = req.params.year
-		, mm = req.params.month
-		, re = new RegExp(yy + '-' + mm,'i')
+		, today = req.query.today
+		, re = new RegExp(today, 'i')
 	Company.findOne({manager: userId})
 	.where('corporateMember').in([staffId])
 	.exec((err, company)=> {
 		if(err) return res.status(404).send(err)
 		if(!company) return res.status(404).send({error: 'Not found the company or staff Id'})
 		Record.find({owner: staffId})
-		.where('today').regex(re)
-		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s')
-		.exec((err, records)=> {
-			if(err) return res.status(404).send(err)
-			res.status(200).send(records)
-		})
-	})
-})
-// /人/日
-router.get('/staffs/:id/:year/:month/:day', (req, res)=> {
-	const userId = req.decoded.userId
-		, staffId = req.params.id
-		, yy = req.params.year
-		, mm = req.params.month
-		, dd = req.params.day
-		, re = new RegExp(yy + '-' + mm + '-' + dd,'i')
-	Company.findOne({manager: userId})
-	.where('corporateMember').in([staffId])
-	.exec((err, company)=> {
-		if(err) return res.status(404).send(err)
-		if(!company) return res.status(404).send({error: 'Not found the company or staff Id'})
-		Record.find({owner: staffId})
+		.where('companyId').equals(company._id)
 		.where('today').regex(re)
 		.populate('owner', 'wxName img remark')
 		.populate('sweeps', 'place h_m_s')
