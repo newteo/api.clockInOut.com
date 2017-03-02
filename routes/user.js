@@ -270,28 +270,11 @@ router.get('/cos', (req, res)=> {
 		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')
 	res.send({mm: mmmm, js: jsjsjs})
 })
-//tian
-router.get('/record/:year/:month/:day', (req, res)=> {
+//
+router.get('/record', (req, res)=> {
 	const userId = req.decoded.userId
-		, yy = req.params.year
-		, mm = req.params.month
-		, dd = req.params.day
-		, re = new RegExp(yy + '-' + mm + '-' + dd,'i')
-	Record.find({owner: userId}, {__v:0})
-	.where('today').regex(re)
-	.populate('owner', 'wxName img remark')
-	.populate('sweeps', 'place h_m_s')
-	.exec((err, records)=> {
-		if(err) return res.status(404).send(err)
-		res.status(200).send(records)
-	})
-})
-//yue
-router.get('/record/:year/:month', (req, res)=> {
-	const userId = req.decoded.userId
-		, yy = req.params.year
-		, mm = req.params.month
-		, re = new RegExp(yy + '-' + mm,'i')
+		, today = req.query.today
+		, re = new RegExp(today, 'i')
 	Record.find({owner: userId}, {__v:0})
 	.where('today').regex(re)
 	.populate('owner', 'wxName img remark')
