@@ -134,6 +134,7 @@ router.post('/punch/', (req, res)=> {
 			if(companyData.t6) companyData.t6 = companyData.t6.split(':')
 			if(sweepRange(companyData, x, y)) {
 				Record.findOne({owner: userId})
+				.where('companyId').equals(encryptId)
 				.where('today').equals(today)
 				.exec((err, same)=> {
 					if(err) return res.status(404).send(err)
