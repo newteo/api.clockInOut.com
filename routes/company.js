@@ -242,30 +242,30 @@ router.get('/staffs/day', (req, res)=> {
 		, today = req.query.today
 	var member = []
 	Company.findOne({manager: userId})
-	.populate({path: 'corporateMember', 
-		select: 'wxName img status belongsTo remark punchCardRecords', 
-		populate: {
-			path: 'punchCardRecords',
-			select: 'normal today sweeps', 
-			populate: {
-				path: 'sweeps', 
-				select: 'place h_m_s'
-			}
-		}
-	})
+	.populate('corporateMember', 'wxName img status belongsTo remark punchCardRecords')
 	.exec((err, company)=> {
 		if(err) return res.status(404).send(err)
 		if(!company) return res.status(404).send({error: 'Not found the company'})
-		company.corporateMember.map((staff)=> {
-			staff.punchCardRecords.map((item)=> {
-				if(item.today != today) {
-					delete item
-				}
+		Record.find({companyId: company._id}, {__v:0, updatedTime:0, companyId:0, createdTime:0})
+		.where('today').equals(today)
+		.populate('sweeps', 'place h_m_s')
+		.exec((err, records)=> {
+			if(err) return res.send(err)
+			company.corporateMember.map((staff)=> {
+				var card = records.map((item)=> { 
+					if(String(item.owner) == String(staff._id)) return item
+					else return null
+				})
+				member.push({
+					_id: staff._id,
+					wxName: staff.wxName,
+					img: staff.img,
+					remark: staff.remark,
+					punchCardRecord: card
+				})
 			})
-			console.log(staff)
+			res.status(200).send(member)
 		})
-
-		res.status(200).send(member)
 	})
 })
 //改备注

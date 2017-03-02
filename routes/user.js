@@ -96,7 +96,10 @@ router.post('/punch/', (req, res)=> {
 		, minute = nowdate.getMinutes()
 		, second = nowdate.getSeconds()
 		, today = `${year}-${month}-${day}`
-		, time = `${hour}:${minute}:${second}`
+		, hour0 = hour < 10 ? ('0' + hour) : hour
+		, minute0 = minute < 10 ? ('0' + minute) : minute
+		, second0 = second < 10 ? ('0' + second) : second
+		, time = `${hour0}:${minute0}:${second0}`
 	request.get(`https://apis.map.qq.com/ws/geocoder/v1/?location=${x},${y}&coord_type=3&key=${key}`)
 	.end((err, qqtxt)=> {
 		if(err) return res.status(404).send(err)
@@ -265,11 +268,11 @@ router.delete('/tofree', (req, res)=> {
 	})
 })
 
-router.get('/cos', (req, res)=> {
-	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
-		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')
-	res.send({mm: mmmm, js: jsjsjs})
-})
+// router.get('/cos', (req, res)=> {
+// 	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
+// 		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')
+// 	res.send({mm: mmmm, js: jsjsjs})
+// })
 //
 router.get('/record', (req, res)=> {
 	const userId = req.decoded.userId
