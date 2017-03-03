@@ -8,4 +8,5 @@ module.exports = {
   company: require('./company'),
   session: require('./session'),
   qrcode: require('./qrcode')
+  // wxMessage: require('./wxMessage')
 }

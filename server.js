@@ -25,6 +25,7 @@ app.use('/user', routes.user)
 app.use('/company', routes.company)
 app.use('/session', routes.session)
 app.use('/qrcode', routes.qrcode)
+// app.use('/wxMessage', routes.wxMessage)
 app.use('/admin', admin)
 
 app.listen(port, ()=> {

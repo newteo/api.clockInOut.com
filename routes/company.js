@@ -67,14 +67,14 @@ function createCompany(uId, body, res) {
     res.status(201).send({types: 'manager', company})
   })
 }
-function getwxToken(callback) {
-  request.get(`${wxApis.token}?grant_type=client_credential&appid=${appId}&secret=${appSecret}`)
-  .end((err, result)=> {
-    if(err) return rconsole.log(err)
-    var accessToken = JSON.parse(result.text).access_token
-    typeof callback == 'function' && callback(accessToken)
-  })
-}
+// function getwxToken(callback) {
+//   request.get(`${wxApis.token}?grant_type=client_credential&appid=${appId}&secret=${appSecret}`)
+//   .end((err, result)=> {
+//     if(err) return rconsole.log(err)
+//     var accessToken = JSON.parse(result.text).access_token
+//     typeof callback == 'function' && callback(accessToken)
+//   })
+// }
 function messageSendToUser(uId, cId, formId) {
   User.findOne({_id: uId})
   .exec((err, user)=> {
@@ -118,6 +118,7 @@ function messageSendToUser(uId, cId, formId) {
         .set('Content-Type', 'application/json')
         .end((err, result)=> {
           if(err) return console.log(err)
+          console.log(user.openId)
           console.log(result.text)
           // res.send(result.text)
         })
@@ -262,10 +263,10 @@ router.post('/applylist/:id', (req, res)=> {
             {upsert: true}, 
             (err, txt)=> {
               if(err) return console.log(err)
-              console.log(formId)
-              setTimeout(function() {
-                messageSendToUser(applyId, company._id, formId)
-              }, 10000)
+              // console.log(formId)
+              // setTimeout(function() {
+              //   messageSendToUser(applyId, company._id, formId)
+              // }, 10000)
               res.status(201).send({message: 'add success'})
               // console.log('user changed')
             })
