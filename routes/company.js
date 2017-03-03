@@ -41,7 +41,7 @@ function createCompany(uId, body, res) {
     coordinate_longitude: body.longitude || null,
     phone: body.phone || null,
     commutingTime: body.commutingTime || [ '8:00', '12:00', '14:00', '18:00', null, null],
-    radius: body.radius || 500,
+    radius: body.radius || 100,
     corporateMember: [ ],
     mottos: [ ],
     QRcodeUrl: null,
@@ -199,6 +199,7 @@ router.post('/applylist/:id', (req, res)=> {
             {upsert: true}, 
             (err, txt)=> {
               if(err) return console.log(err)
+              console.log(applyId, company._id, formId)
               request.post(`${host.clock}wxMessage/sendtouser`)
               .send({
                 userId: applyId,
