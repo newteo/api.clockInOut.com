@@ -262,6 +262,7 @@ router.post('/applylist/:id', (req, res)=> {
             {upsert: true}, 
             (err, txt)=> {
               if(err) return console.log(err)
+              console.log(formId)
               messageSendToUser(applyId, company._id, formId)
               res.status(201).send({message: 'add success'})
               // console.log('user changed')
