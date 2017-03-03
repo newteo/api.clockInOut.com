@@ -8,6 +8,10 @@ const router = require('express').Router()
   , delFile = require('../utils/delFile')
   , host = require('../utils/hosturl')
   , checkToken = require('../utils/checkToken')
+  , wxApis = require('../utils/wxApis')
+  , appId = process.env.XCX_ID
+  , appSecret = process.env.XCX_SECRET
+  , templateId = process.env.TEMPLATE
 
 checkToken(router)
 
@@ -63,6 +67,65 @@ function createCompany(uId, body, res) {
     res.status(201).send({types: 'manager', company})
   })
 }
+function getwxToken(callback) {
+  request.get(`${wxApis.token}?grant_type=client_credential&appid=${appId}&secret=${appSecret}`)
+  .end((err, result)=> {
+    if(err) return rconsole.log(err)
+    var accessToken = JSON.parse(result.text).access_token
+    typeof callback == 'function' && callback(accessToken)
+  })
+}
+function messageSendToUser(uId, cId, formId) {
+  User.findOne({_id: uId})
+  .exec((err, user)=> {
+    if(err) return console.log(err)
+    if(!user) return 
+    Company.findOne({_id: cId})
+    .exec((err, company)=> {
+      if(err) return console.log(err)
+      if(!company) return 
+      var value = {
+        "keyword1": {
+          "value": user.wxName, 
+          "color": "#173177"
+        }, 
+        "keyword2": {
+          "value": "公司成员认证", 
+          "color": "#173177"
+        }, 
+        "keyword3": {
+          "value": company.name, 
+          "color": "#173177"
+        }, 
+        "keyword4": {
+          "value": "审核通过", 
+          "color": "#173177"
+        },
+        "keyword5": {
+          "value": "备注", 
+          "color": "#173177"
+        } 
+      }
+      getwxToken((wxToken) => {
+        request.post(`${wxApis.send}?access_token=${wxToken}`)
+        .send({
+          touser: user.openId,
+          template_id: templateId,
+          page: 'login',
+          form_id: formId,
+          data: value
+        })
+        .set('Content-Type', 'application/json')
+        .end((err, result)=> {
+          if(err) return console.log(err)
+          // console.log(result.text)
+          // res.send(result.text)
+        })
+      })
+    })
+  })
+}
+
 //创建公司信息
 router.post('/new', (req, res)=> {
   const userId = req.decoded.userId
@@ -199,17 +262,7 @@ router.post('/applylist/:id', (req, res)=> {
             {upsert: true}, 
             (err, txt)=> {
               if(err) return console.log(err)
-              console.log(applyId, company._id, formId)
-              request.post(`${host.clock}wxMessage/sendtouser`)
-              .send({
-                userId: applyId,
-                companyId: company._id,
-                formId: formId
-              })
-              .set('Content-Type', 'application/json')
-              .end((err, result)=> {
-                if(err) return console.log(err)
-              })
+              messageSendToUser(applyId, company._id, formId)
               // console.log('user changed')
             })
             res.status(201).send({message: 'add success'})

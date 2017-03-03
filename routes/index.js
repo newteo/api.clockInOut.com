@@ -7,6 +7,5 @@ module.exports = {
   user: require('./user'),
   company: require('./company'),
   session: require('./session'),
-  qrcode: require('./qrcode'),
-  wxMessage: require('./wxMessage')
+  qrcode: require('./qrcode')
 }
