@@ -1,3 +1,3 @@
 module.exports = {
-	clock: 'https://api.clock.newteo.com/'
+  clock: 'https://api.clock.newteo.com/'
 }

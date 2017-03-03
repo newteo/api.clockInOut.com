@@ -1,15 +1,15 @@
 const express = require('express')
-	, app = express()
+  , app = express()
 
 require('./mongodb')
 require('dotenv').config()
 
 const port = process.env.PORT
-	, routes = require('./routes')
-	, admin = require('./routes/adminRoutes')
+  , routes = require('./routes')
+  , admin = require('./routes/adminRoutes')
 
 const cors = require('cors')
-	, bodyParser = require('body-parser')
+  , bodyParser = require('body-parser')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -25,9 +25,10 @@ app.use('/user', routes.user)
 app.use('/company', routes.company)
 app.use('/session', routes.session)
 app.use('/qrcode', routes.qrcode)
+app.use('/wxMessage', routes.wxMessage)
 app.use('/admin', admin)
 
 app.listen(port, ()=> {
-	console.log('Server is ruuning on port: ' + port)
-	console.log('Use Ctrl-C to stop')
+  console.log('Server is ruuning on port: ' + port)
+  console.log('Use Ctrl-C to stop')
 })
