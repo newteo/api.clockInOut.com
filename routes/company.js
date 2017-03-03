@@ -118,7 +118,7 @@ function messageSendToUser(uId, cId, formId) {
         .set('Content-Type', 'application/json')
         .end((err, result)=> {
           if(err) return console.log(err)
-          // console.log(result.text)
+          console.log(result.text)
           // res.send(result.text)
         })
       })
@@ -263,9 +263,9 @@ router.post('/applylist/:id', (req, res)=> {
             (err, txt)=> {
               if(err) return console.log(err)
               messageSendToUser(applyId, company._id, formId)
+              res.status(201).send({message: 'add success'})
               // console.log('user changed')
             })
-            res.status(201).send({message: 'add success'})
           })
         })
       })
