@@ -177,7 +177,7 @@ router.get('/applylist', (req, res)=> {
 router.post('/applylist/:id', (req, res)=> {
   const userId = req.decoded.userId
     , applyId = req.params.id
-    , formId = req.query.formId
+    , formId = req.body.formId
   if(req.body.validation == 'pass') {
     Company.findOne({manager: userId})
     .exec((err, company)=> {
