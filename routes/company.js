@@ -1,4 +1,5 @@
 const router = require('express').Router()
+  , request = require('superagent')
   , User = require('../models/User')
   , Record = require('../models/Record')
   , Company = require('../models/Company')
@@ -176,6 +177,7 @@ router.get('/applylist', (req, res)=> {
 router.post('/applylist/:id', (req, res)=> {
   const userId = req.decoded.userId
     , applyId = req.params.id
+    , formId = req.query.formId
   if(req.body.validation == 'pass') {
     Company.findOne({manager: userId})
     .exec((err, company)=> {
@@ -197,6 +199,16 @@ router.post('/applylist/:id', (req, res)=> {
             {upsert: true}, 
             (err, txt)=> {
               if(err) return console.log(err)
+              request.post(`${host.clock}wxMessage/sendtouser`)
+              .send({
+                userId: applyId,
+                companyId: company._id,
+                formId: formId
+              })
+              .set('Content-Type', 'application/json')
+              .end((err, result)=> {
+                if(err) return console.log(err)
+              })
               // console.log('user changed')
             })
             res.status(201).send({message: 'add success'})

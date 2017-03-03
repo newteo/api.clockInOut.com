@@ -26,12 +26,12 @@ router.post('/sendtouser', (req, res)=> {
     , formId = req.body.formId
   User.findOne({_id: userId})
   .exec((err, user)=> {
-    if(err) return res.send(err)
-    if(!user) return res.send({error: 'miss'})
+    if(err) return console.log(err)
+    if(!user) return console.log({error: 'miss'})
     Company.findOne({_id: companyId})
     .exec((err, company)=> {
-      if(err) return res.send(err)
-      if(!company) return res.send('misss')
+      if(err) return console.log(err)
+      if(!company) return console.log('misss')
       var value = {
         "keyword1": {
           "value": user.wxName, 
@@ -57,7 +57,7 @@ router.post('/sendtouser', (req, res)=> {
       getwxToken((wxToken) => {
         request.post(`${wxApis.send}?access_token=${wxToken}`)
         .send({
-          touser: 'omHzq0FhLWd4CyhJjJ8VLAebKBKQ',//user.openId
+          touser: user.openId,
           template_id: templateId,
           page: 'login',
           form_id: formId,
@@ -66,8 +66,8 @@ router.post('/sendtouser', (req, res)=> {
         .set('Content-Type', 'application/json')
         .end((err, result)=> {
           if(err) return console.log(err)
-          console.log(result.text)
-          res.send(result.text)
+          // console.log(result.text)
+          // res.send(result.text)
         })
       })
     })
