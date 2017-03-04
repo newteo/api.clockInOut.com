@@ -13,7 +13,7 @@ const router = require('express').Router()
   , appSecret = process.env.XCX_SECRET
   , templateId = process.env.TEMPLATE
 
-checkToken(router)
+checkToken(router) 
 
 function changeUser(members) {
   members.map((item)=> {

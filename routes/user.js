@@ -185,134 +185,134 @@ router.post('/punch/', (req, res)=> {
 
 //查看个人信息
 router.get('/info', (req, res)=> {
-	const userId = req.decoded.userId
-	User.findOne({_id: userId}, {__v:0})
-	.populate('belongsTo')
-	.exec((err, user)=> {
-		if(err) return res.status(404).send(err)
-		res.status(200).send(user)
-	})
+  const userId = req.decoded.userId
+  User.findOne({_id: userId}, {__v:0})
+  .populate('belongsTo')
+  .exec((err, user)=> {
+    if(err) return res.status(404).send(err)
+    res.status(200).send(user)
+  })
 })
 
 //查看个人打卡记录
 router.get('/records', (req, res)=> {
-	const userId = req.decoded.userId
-	Record.find({owner: userId}, {__v:0})
-	.populate('owner', 'wxName img employeeID realName status')
-	.populate('sweeps', 'place h_m_s conditions createdTime')
-	.sort({createdTime: -1})
-	.exec((err, records)=> {
-		if(err) return res.status(404).send(err)
-		res.status(200).send(records)
-	})
+  const userId = req.decoded.userId
+  Record.find({owner: userId}, {__v:0})
+  .populate('owner', 'wxName img employeeID realName status')
+  .populate('sweeps', 'place h_m_s conditions createdTime')
+  .sort({createdTime: -1})
+  .exec((err, records)=> {
+    if(err) return res.status(404).send(err)
+    res.status(200).send(records)
+  })
 })
 //查看所有公司列表
 router.get('/companies', (req, res)=> {
-	Company.find({}, {name:1, logo:1, address:1})
-	.exec((err, companies)=> {
-		if(err) return res.status(404).send(err)
-		res.status(200).send(companies)
-	})
+  Company.find({}, {name:1, logo:1, address:1})
+  .exec((err, companies)=> {
+    if(err) return res.status(404).send(err)
+    res.status(200).send(companies)
+  })
 })
 //单公司详情
 router.get('/company/:id', (req, res)=> {
-	const companyId = req.params.id
-	Company.findOne({_id: companyId}, {__v:0, coordinate_latitude:0, coordinate_longitude:0})
-	.exec((err, company)=> {
-		if(err) return res.status(404).send(err)
-		if(!company) return res.status(404).send({error: 'Not found the company'})
-		res.status(200).send(company)
-	})
+  const companyId = req.params.id
+  Company.findOne({_id: companyId}, {__v:0, coordinate_latitude:0, coordinate_longitude:0})
+  .exec((err, company)=> {
+    if(err) return res.status(404).send(err)
+    if(!company) return res.status(404).send({error: 'Not found the company'})
+    res.status(200).send(company)
+  })
 })
 //申请加入公司
 router.post('/company', (req, res)=> {
-	const userId = req.decoded.userId
-		, companyId = req.body.companyId
-	ApplyCache.findOne({_id: companyId})
-	.where('applyMember').in([userId])
-	.exec((err, exist)=> {
-		if(err) return res.status(404).send(err)
-		if(exist) {
-			return res.status(400).send({message: '已提交过申请'})
-		} else {
-			ApplyCache.findOneAndUpdate({_id: companyId}, 
-			{$push: {applyMember: userId}}, 
-			{new: true}, 
-			(err, applycache)=> {
-				if(err) return res.status(404).send(err)
-				res.status(200).send({message: '申请已提交'})
-			})
-		}
-	})
+  const userId = req.decoded.userId
+    , companyId = req.body.companyId
+  ApplyCache.findOne({_id: companyId})
+  .where('applyMember').in([userId])
+  .exec((err, exist)=> {
+    if(err) return res.status(404).send(err)
+    if(exist) {
+      return res.status(400).send({message: '已提交过申请'})
+    } else {
+      ApplyCache.findOneAndUpdate({_id: companyId}, 
+      {$push: {applyMember: userId}}, 
+      {new: true}, 
+      (err, applycache)=> {
+        if(err) return res.status(404).send(err)
+        res.status(200).send({message: '申请已提交'})
+      })
+    }
+  })
 })
 //退出公司
 router.delete('/tofree', (req, res)=> {
-	const userId = req.decoded.userId
-	User.findOne({_id: userId})
-	.exec((err, user)=> {
-		if(err) return res.status(404).send(err)
-		if(!user) return res.status(404).send({error: 'Your info has been deleted'})
-		if(user.belongsTo) {
-			Company.update({_id: user.belongsTo}, 
-			{$pull: {corporateMember: userId}}, 
-			(err, txt)=> {
-				if(err) return console.log(err)
-			})
-		} 
-		// else return res.send({code: 404, error: 'you belong not to the company'})
-		user.types = 'user'
-		user.belongsTo = null
-		user.remark = null
-		user.save((err)=> {
-			if(err) return res.status(404).send(err)
-			res.status(200).send(user)
-		})
-	})
+  const userId = req.decoded.userId
+  User.findOne({_id: userId})
+  .exec((err, user)=> {
+    if(err) return res.status(404).send(err)
+    if(!user) return res.status(404).send({error: 'Your info has been deleted'})
+    if(user.belongsTo) {
+      Company.update({_id: user.belongsTo}, 
+      {$pull: {corporateMember: userId}}, 
+      (err, txt)=> {
+        if(err) return console.log(err)
+      })
+    } 
+    // else return res.send({code: 404, error: 'you belong not to the company'})
+    user.types = 'user'
+    user.belongsTo = null
+    user.remark = null
+    user.save((err)=> {
+      if(err) return res.status(404).send(err)
+      res.status(200).send(user)
+    })
+  })
 })
 
 router.get('/record', (req, res)=> {
-	const userId = req.decoded.userId
-		, today = req.query.today
-		, re = new RegExp(today, 'i')
-	User.findOne({_id: userId})
-	.exec((err, user)=> {
-		if(err) return res.status(404).send(err)
-		Record.find({owner: userId}, {__v:0})
-		.where('companyId').equals(user.belongsTo)
-		.where('today').regex(re)
-		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s conditions')
-		.exec((err, records)=> {
-			if(err) return res.status(404).send(err)
-			res.status(200).send(records)
-		})
-	})
+  const userId = req.decoded.userId
+    , today = req.query.today
+    , re = new RegExp(today, 'i')
+  User.findOne({_id: userId})
+  .exec((err, user)=> {
+    if(err) return res.status(404).send(err)
+    Record.find({owner: userId}, {__v:0})
+    .where('companyId').equals(user.belongsTo)
+    .where('today').regex(re)
+    .populate('owner', 'wxName img remark')
+    .populate('sweeps', 'place h_m_s conditions')
+    .exec((err, records)=> {
+      if(err) return res.status(404).send(err)
+      res.status(200).send(records)
+    })
+  })
 })
 
 router.get('/record/time', (req, res)=> {
-	const userId = req.decoded.userId
-	var start = new Date(req.query.start.replace(/\-/g, ','))
-		, end = new Date(req.query.end.replace(/\-/g, ','))
-	User.findOne({_id: userId})
-	.exec((err, user)=> {
-		if(err) return res.status(404).send(err)
-		Record.find({owner: userId}, {__v:0})
-		.where('companyId').equals(user.belongsTo)
-		.where('createdTime').gte(start).lt(end)
-		.populate('owner', 'wxName img remark')
-		.populate('sweeps', 'place h_m_s conditions')
-		.exec((err, records)=> {
-			if(err) return res.status(404).send(err)
-			res.status(200).send(records)
-		})
-	})
+  const userId = req.decoded.userId
+  var start = new Date(req.query.start.replace(/\-/g, ','))
+    , end = new Date(req.query.end.replace(/\-/g, ','))
+  User.findOne({_id: userId})
+  .exec((err, user)=> {
+    if(err) return res.status(404).send(err)
+    Record.find({owner: userId}, {__v:0})
+    .where('companyId').equals(user.belongsTo)
+    .where('createdTime').gte(start).lt(end)
+    .populate('owner', 'wxName img remark')
+    .populate('sweeps', 'place h_m_s conditions')
+    .exec((err, records)=> {
+      if(err) return res.status(404).send(err)
+      res.status(200).send(records)
+    })
+  })
 })
 
 // router.get('/cos', (req, res)=> {
-// 	var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
-// 		, jsjsjs = makeHash('58b6964283096a4a43b41aa0')
-// 	res.send({mm: mmmm, js: jsjsjs})
+//   var mmmm = getDistance(23.46325, 116.68514, 23.46618, 116.6822)
+//     , jsjsjs = makeHash('58b6964283096a4a43b41aa0')
+//   res.send({mm: mmmm, js: jsjsjs})
 // })
-//
+
 
 module.exports = router
