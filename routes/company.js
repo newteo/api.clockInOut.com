@@ -111,7 +111,7 @@ function messageSendToUser(uId, cId) {
         .send({
           touser: user.openId,
           template_id: templateId,
-          page: 'login',
+          page: '/pages/login/login',
           form_id: user.formId,
           data: value
         })
