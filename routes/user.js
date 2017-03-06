@@ -209,7 +209,6 @@ router.get('/records', (req, res)=> {
 //查看所有公司列表
 router.get('/companies', (req, res)=> {
   Company.find({}, {name:1, logo:1, address:1})
-  .limit(1000)
   .exec((err, companies)=> {
     if(err) return res.status(404).send(err)
     res.status(200).send(companies)
