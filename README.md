@@ -80,7 +80,8 @@
 ```
 ```js
 {
-  companyId: ${companyId}        //公司Id
+  companyId: ${companyId},        //公司Id
+  formId: ${formId}        //form_id
 }
 ```
 未提交的返回=>  {code: 200, message: '申请已提交'}    
