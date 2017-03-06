@@ -118,7 +118,6 @@ function messageSendToUser(uId, cId) {
         .set('Content-Type', 'application/json')
         .end((err, result)=> {
           if(err) return console.log(err)
-          console.log(user.openId)
           console.log(result.text)
           // res.send(result.text)
         })
