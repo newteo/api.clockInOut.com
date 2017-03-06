@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 
 const userSchema = new Schema({
   openId: { type: String },
+  formId: { type: String },
   wxName: { type: String },
   img: { type: String },
   employeeID: { type: String },

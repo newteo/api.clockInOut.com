@@ -228,6 +228,7 @@ router.get('/company/:id', (req, res)=> {
 router.post('/company', (req, res)=> {
   const userId = req.decoded.userId
     , companyId = req.body.companyId
+    , formId = req.body.formId
   ApplyCache.findOne({_id: companyId})
   .where('applyMember').in([userId])
   .exec((err, exist)=> {
@@ -240,6 +241,12 @@ router.post('/company', (req, res)=> {
       {new: true}, 
       (err, applycache)=> {
         if(err) return res.status(404).send(err)
+        User.update({_id: userId}, 
+        {$set: {formId: formId}}, 
+        {upsert: true}, 
+        (err, txt)=> {
+          if(err) return console.log(err)
+        })
         res.status(200).send({message: '申请已提交'})
       })
     }

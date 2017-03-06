@@ -24,6 +24,7 @@ function setinfo(wxInfo, res) {
     } else {
       const info = new User({
         openId: wxInfo.openId,
+        formId: null,
         wxName: wxInfo.nickName,
         img: wxInfo.avatarUrl,
         employeeID: null,

@@ -67,15 +67,15 @@ function createCompany(uId, body, res) {
     res.status(201).send({types: 'manager', company})
   })
 }
-// function getwxToken(callback) {
-//   request.get(`${wxApis.token}?grant_type=client_credential&appid=${appId}&secret=${appSecret}`)
-//   .end((err, result)=> {
-//     if(err) return rconsole.log(err)
-//     var accessToken = JSON.parse(result.text).access_token
-//     typeof callback == 'function' && callback(accessToken)
-//   })
-// }
-function messageSendToUser(uId, cId, formId) {
+function getwxToken(callback) {
+  request.get(`${wxApis.token}?grant_type=client_credential&appid=${appId}&secret=${appSecret}`)
+  .end((err, result)=> {
+    if(err) return rconsole.log(err)
+    var accessToken = JSON.parse(result.text).access_token
+    typeof callback == 'function' && callback(accessToken)
+  })
+}
+function messageSendToUser(uId, cId) {
   User.findOne({_id: uId})
   .exec((err, user)=> {
     if(err) return console.log(err)
@@ -112,7 +112,7 @@ function messageSendToUser(uId, cId, formId) {
           touser: user.openId,
           template_id: templateId,
           page: 'login',
-          form_id: formId,
+          form_id: user.formId,
           data: value
         })
         .set('Content-Type', 'application/json')
@@ -241,7 +241,6 @@ router.get('/applylist', (req, res)=> {
 router.post('/applylist/:id', (req, res)=> {
   const userId = req.decoded.userId
     , applyId = req.params.id
-    , formId = String(req.body.formId)
   if(req.body.validation == 'pass') {
     Company.findOne({manager: userId})
     .exec((err, company)=> {
@@ -263,9 +262,8 @@ router.post('/applylist/:id', (req, res)=> {
             {upsert: true}, 
             (err, txt)=> {
               if(err) return console.log(err)
-              // console.log(formId)
               // setTimeout(function() {
-              //   messageSendToUser(applyId, company._id, formId)
+              messageSendToUser(applyId, company._id)
               // }, 10000)
               res.status(201).send({message: 'add success'})
               // console.log('user changed')
