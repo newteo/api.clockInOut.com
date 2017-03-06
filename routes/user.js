@@ -209,6 +209,7 @@ router.get('/records', (req, res)=> {
 //查看所有公司列表
 router.get('/companies', (req, res)=> {
   Company.find({}, {name:1, logo:1, address:1})
+  .limit(1000)
   .exec((err, companies)=> {
     if(err) return res.status(404).send(err)
     res.status(200).send(companies)
@@ -229,7 +230,7 @@ router.post('/company', (req, res)=> {
   const userId = req.decoded.userId
     , companyId = req.body.companyId
     , formId = req.body.formId
-  ApplyCache.findOne({_id: companyId})
+  ApplyCache.findOne({_id: companyId})    //{}
   .where('applyMember').in([userId])
   .exec((err, exist)=> {
     if(err) return res.status(404).send(err)
