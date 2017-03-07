@@ -9,6 +9,7 @@ const router = require('express').Router()
   , host = require('../utils/hosturl')
   , checkToken = require('../utils/checkToken')
   , wxApis = require('../utils/wxApis')
+  , arrayIn = require('../utils/arrayIn')
   , appId = process.env.XCX_ID
   , appSecret = process.env.XCX_SECRET
   , templateId = process.env.TEMPLATE
@@ -245,6 +246,8 @@ router.post('/applylist/:id', (req, res)=> {
     .exec((err, company)=> {
       if(err) return res.status(404).send(err)
       if(!company) return res.status(404).send({error: 'Not found the company'})
+      var inArray = arrayIn(company.corporateMember, applyId)
+      if(inArray) return res.status(400).send({message: '该用户已是本公司成员'})
       ApplyCache.findOne({_id: company._id})
       .where('applyMember').in([applyId])
       .exec((err, applycache)=> {

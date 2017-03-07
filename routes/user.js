@@ -236,18 +236,27 @@ router.post('/company', (req, res)=> {
     if(exist) {
       return res.status(400).send({message: '已提交过申请'})
     } else {
-      ApplyCache.findOneAndUpdate({_id: companyId}, 
-      {$push: {applyMember: userId}}, 
-      {new: true}, 
-      (err, applycache)=> {
+      Company.findOne({_id: companyId})
+      .where('corporateMember').in([userId])
+      .exec((err, isStaff)=> {
         if(err) return res.status(404).send(err)
-        User.update({_id: userId}, 
-        {$set: {formId: formId}}, 
-        {upsert: true}, 
-        (err, txt)=> {
-          if(err) return console.log(err)
-        })
-        res.status(200).send({message: '申请已提交'})
+        if(isStaff) {
+          return res.status(400).send({message: '你已是该公司员工'})
+        } else {
+          ApplyCache.findOneAndUpdate({_id: companyId}, 
+          {$push: {applyMember: userId}}, 
+          {new: true}, 
+          (err, applycache)=> {
+            if(err) return res.status(404).send(err)
+            User.update({_id: userId}, 
+            {$set: {formId: formId}}, 
+            {upsert: true}, 
+            (err, txt)=> {
+              if(err) return console.log(err)
+            })
+            res.status(200).send({message: '申请已提交'})
+          })
+        }
       })
     }
   })
