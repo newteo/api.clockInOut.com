@@ -254,7 +254,7 @@ router.post('/company', (req, res)=> {
             (err, txt)=> {
               if(err) return console.log(err)
             })
-            res.status(200).send({message: '申请已提交'})
+            // res.status(200).send({message: '申请已提交'})
           })
         }
       })

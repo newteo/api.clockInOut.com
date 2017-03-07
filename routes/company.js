@@ -267,7 +267,7 @@ router.post('/applylist/:id', (req, res)=> {
               // setTimeout(function() {
               messageSendToUser(applyId, company._id)
               // }, 10000)
-              res.status(201).send({message: 'add success'})
+              // res.status(201).send({message: 'add success'})
               // console.log('user changed')
             })
           })
