@@ -209,14 +209,16 @@ router.delete('/now', (req, res)=> {
     Company.remove({_id: company._id})
     .exec((err)=> {
       if(err) return res.status(404).send(err)
-      User.update({_id: userId}, 
-      {$set: { types: 'user', belongsTo: null }}, 
-      {upsert: true}, 
-      (err, txt)=> {
-        if(err) return console.log(err)
-        // console.log('user changed')
+      User.findOne({_id: userId}) 
+      .exec((err, user)=> {
+        if(err) return res.status(404).send(err)
+        user.types = 'user' 
+        user.belongsTo = null
+        user.save((err)=> {
+          if(err) return res.status(404).send(err)
+          res.status(200).send({types: user.types, message: 'company deleted success'})
+        })
       })
-      res.status(200).send({types: 'user', message: 'company deleted success'})
     })
   })
 })
